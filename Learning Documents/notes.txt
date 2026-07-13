@@ -1,0 +1,47 @@
+What problem does Clean Architecture solve that traditional layered architecture struggles with?
+the main problen that clean arch does is sperating the business logic with data base or other externals ervice and also removes tight coupling 
+
+Why should the Domain project have zero external dependencies?
+it constains all the entityes/enums/business rule so that it only c# pure code no databse no ef core
+
+Explain the Dependency Rule in your own words.
+the depencency rule is that for e.g we have two class email and sms and user service need to use both depend on case so user service hve to create the object
+for email and sms now the depency rule is that we create two class email and service now we have the interface for both so user service will call both through interface so that no manula object creaton
+and one more thing the depency rule sperating the business rule away from db so that that should create any mess if any thing changes outside.
+
+
+Why are private set properties better than public set in entities?
+it will help to protect our busnisess rule so the from outside the value cannot be tempaered 
+
+If tomorrow you replace SQL Server with PostgreSQL, which project(s) should change, and which should remain untouched?
+there will change in major in Infrastructure nd might be in application and no were else
+
+
+
+What is the difference between an Entity and a Value Object?
+the entity deifthe by its unique ness liek product if any thing chane relaed to product it does change the product identityt 
+the value object are actual it hreresnt by its value like amount,currency etc.
+Why is Money better modeled as a value object than a decimal?
+it actual help me prodct the ivalid object of value instead of we use constructor for that to handle the proper validatn no direct chanfe to value 
+What problem do private setters solve?
+if help me maintain the validstate so that outide cannot dirrect change value and make it and invalid.so we canhave private setting adn we defined the method to do that with proper validation.
+Why should entity constructors validate invariants?
+by constructor we can habdle the and validae the data so no invalid object
+What is an Aggregate Root, and why is Product one in this project?
+what every happed related to product should happen trhought event it only notified the past tense created,updated,shipped etc
+What is the purpose of a Domain Event, and why is it expressed in the past tense?
+the domain event is help me to know any thing happen it will notified the past tense.
+
+
+Why does IProductRepository belong in the Application layer instead of Infrastructure?
+because it know what the instruction what it will do not how it willbe done.
+What problem does the Dependency Inversion Principle solve?
+it know onlt the instriction and infra will do implementations of what application syays
+Why should repositories return entities instead of DTOs?
+be cause the it is the way to pass data just carry data and and etitirs .
+Why are DTOs used between the Application and API layers?
+dtoes are used for passing the simple structured data and hide all the detail like moeny n product and so easily can be passed withoty exposing actual domain
+What is the responsibility of IUnitOfWork?
+i m not getting this 
+Why does the Application layer depend only on abstractions and not concrete implementations?
+just know that control is given by application and control will be implement by infra

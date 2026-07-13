@@ -1,0 +1,388 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.wrap { padding: 1.5rem 0; max-width: 680px; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.tab { padding: 6px 14px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; background: transparent; color: var(--color-text-secondary); transition: all .15s; white-space: nowrap; }
+.tab.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
+.section { display: none; }
+.section.active { display: block; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 12px; }
+.card-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.card-sub { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+.badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: var(--border-radius-md); margin-right: 4px; margin-bottom: 4px; }
+.badge-danger { background: var(--color-background-danger); color: var(--color-text-danger); }
+.badge-success { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-warning { background: var(--color-background-warning); color: var(--color-text-warning); }
+.badge-info { background: var(--color-background-info); color: var(--color-text-info); }
+.badge-neutral { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; text-align: center; }
+.metric-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.metric-lbl { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.month-block { border-left: 2px solid var(--color-border-secondary); padding-left: 1rem; margin-bottom: 1.25rem; }
+.month-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.month-focus { font-size: 12px; color: var(--color-text-info); margin-bottom: 6px; }
+.skill-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.skill-name { font-size: 13px; color: var(--color-text-primary); min-width: 140px; }
+.skill-bar-bg { flex: 1; height: 6px; background: var(--color-background-secondary); border-radius: 3px; }
+.skill-bar { height: 6px; border-radius: 3px; transition: width .5s ease; }
+.skill-impact { font-size: 11px; color: var(--color-text-secondary); min-width: 38px; text-align: right; }
+.week-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.week-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 12px; }
+.week-num { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 3px; }
+.week-topic { font-size: 13px; color: var(--color-text-primary); font-weight: 500; }
+.week-task { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.day-row { display: grid; grid-template-columns: 90px 1fr; gap: 8px; align-items: start; margin-bottom: 10px; }
+.day-time { font-size: 12px; color: var(--color-text-secondary); padding-top: 2px; }
+.day-act { font-size: 13px; color: var(--color-text-primary); }
+.day-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.reject-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.reject-icon { font-size: 18px; margin-top: 1px; flex-shrink: 0; }
+.reject-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.reject-fix { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; }
+.proj-section { margin-bottom: 1rem; }
+.proj-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+.proj-item { font-size: 13px; color: var(--color-text-primary); padding: 5px 0; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; justify-content: space-between; align-items: center; }
+.stop-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary); align-items: flex-start; }
+.stop-x { color: var(--color-text-danger); font-weight: 500; font-size: 14px; flex-shrink: 0; }
+.stop-text { font-size: 13px; color: var(--color-text-primary); }
+.stop-why { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.int-phase { margin-bottom: 1.25rem; }
+.int-week { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 6px; }
+.int-item { font-size: 13px; color: var(--color-text-primary); padding: 4px 0; padding-left: 12px; position: relative; }
+.int-item::before { content: '·'; position: absolute; left: 2px; color: var(--color-text-secondary); }
+.section-head { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 1rem 0 8px; text-transform: uppercase; letter-spacing: .04em; }
+.cta-btn { display: inline-block; padding: 8px 16px; font-size: 13px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); cursor: pointer; background: transparent; color: var(--color-text-primary); margin-top: 8px; }
+.cta-btn:hover { background: var(--color-background-secondary); }
+.salary-bar-wrap { margin: 6px 0 12px; }
+.salary-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.salary-lbl { font-size: 12px; color: var(--color-text-secondary); min-width: 80px; }
+.salary-bar-bg2 { flex: 1; height: 10px; background: var(--color-background-secondary); border-radius: 5px; }
+.salary-fill { height: 10px; border-radius: 5px; }
+.salary-amt { font-size: 12px; color: var(--color-text-primary); min-width: 60px; text-align: right; }
+</style>
+
+<div class="wrap">
+<div class="tabs">
+  <button class="tab active" onclick="show('analysis')">Skill Gap</button>
+  <button class="tab" onclick="show('roadmap')">4-Month Plan</button>
+  <button class="tab" onclick="show('weekly')">Weekly Map</button>
+  <button class="tab" onclick="show('daily')">Daily Plan</button>
+  <button class="tab" onclick="show('project')">Project</button>
+  <button class="tab" onclick="show('interview')">Interview Prep</button>
+</div>
+
+<!-- SKILL GAP ANALYSIS -->
+<div id="analysis" class="section active">
+  <div class="card">
+    <div class="card-title">Your strengths — what's actually working for you</div>
+    <div style="margin-top:8px">
+      <span class="badge badge-success">ASP.NET Core Web API</span>
+      <span class="badge badge-success">C# + OOP</span>
+      <span class="badge badge-success">SQL Server (solid)</span>
+      <span class="badge badge-success">Angular (mid)</span>
+      <span class="badge badge-success">6 yrs consistency</span>
+    </div>
+    <div class="card-sub" style="margin-top:10px">You have the core backend foundation. C# + .NET is still top-3 backend in India for 12–18 LPA jobs. The problem isn't your stack — it's the gaps around it that kill your comp.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Salary impact by skill — where to spend your 2 hours</div>
+    <div style="margin-top:12px">
+      <div class="skill-row"><span class="skill-name">System Design</span><div class="skill-bar-bg"><div class="skill-bar" style="width:95%;background:#1D9E75"></div></div><span class="skill-impact badge-success" style="font-size:11px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 6px;border-radius:4px">+40%</span></div>
+      <div class="skill-row"><span class="skill-name">AWS (EC2/S3/RDS)</span><div class="skill-bar-bg"><div class="skill-bar" style="width:88%;background:#1D9E75"></div></div><span class="skill-impact badge-success" style="font-size:11px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 6px;border-radius:4px">+35%</span></div>
+      <div class="skill-row"><span class="skill-name">Microservices + Docker</span><div class="skill-bar-bg"><div class="skill-bar" style="width:82%;background:#1D9E75"></div></div><span class="skill-impact badge-success" style="font-size:11px;background:var(--color-background-success);color:var(--color-text-success);padding:2px 6px;border-radius:4px">+30%</span></div>
+      <div class="skill-row"><span class="skill-name">CI/CD (GitHub Actions)</span><div class="skill-bar-bg"><div class="skill-bar" style="width:72%;background:#3B8BD4"></div></div><span class="skill-impact" style="font-size:11px;background:var(--color-background-info);color:var(--color-text-info);padding:2px 6px;border-radius:4px">+20%</span></div>
+      <div class="skill-row"><span class="skill-name">Redis / Caching</span><div class="skill-bar-bg"><div class="skill-bar" style="width:65%;background:#3B8BD4"></div></div><span class="skill-impact" style="font-size:11px;background:var(--color-background-info);color:var(--color-text-info);padding:2px 6px;border-radius:4px">+18%</span></div>
+      <div class="skill-row"><span class="skill-name">RabbitMQ / Kafka basics</span><div class="skill-bar-bg"><div class="skill-bar" style="width:60%;background:#3B8BD4"></div></div><span class="skill-impact" style="font-size:11px;background:var(--color-background-info);color:var(--color-text-info);padding:2px 6px;border-radius:4px">+15%</span></div>
+      <div class="skill-row"><span class="skill-name">DSA (Arrays/Strings/Trees)</span><div class="skill-bar-bg"><div class="skill-bar" style="width:55%;background:#BA7517"></div></div><span class="skill-impact" style="font-size:11px;background:var(--color-background-warning);color:var(--color-text-warning);padding:2px 6px;border-radius:4px">Gate</span></div>
+      <div class="skill-row"><span class="skill-name">Angular (advanced)</span><div class="skill-bar-bg"><div class="skill-bar" style="width:28%;background:#888780"></div></div><span class="skill-impact" style="font-size:11px;background:var(--color-background-secondary);color:var(--color-text-secondary);padding:2px 6px;border-radius:4px">Low</span></div>
+    </div>
+    <div class="card-sub" style="margin-top:10px;font-size:12px">Bar = salary impact. Angular advanced is a trap — mid-level Angular is good enough. Stop going deeper into it.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Rejection reasons — what kills your interviews right now</div>
+    <div class="reject-item">
+      <span class="reject-icon" aria-hidden="true">🚫</span>
+      <div><div class="reject-title">No system design vocabulary</div><div class="reject-fix">Fix: Learn URL shortener, rate limiter, notification system. 2–3 designs, deeply. Not 10 designs shallowly.</div></div>
+    </div>
+    <div class="reject-item">
+      <span class="reject-icon" aria-hidden="true">🚫</span>
+      <div><div class="reject-title">Can't explain microservices from experience</div><div class="reject-fix">Fix: Build one yourself. A project with 2–3 services talking via HTTP + a message queue is enough to speak credibly.</div></div>
+    </div>
+    <div class="reject-item">
+      <span class="reject-icon" aria-hidden="true">🚫</span>
+      <div><div class="reject-title">Zero cloud exposure — even basic EC2/S3</div><div class="reject-fix">Fix: Deploy your project on AWS. An EC2 + RDS + S3 deployment = "cloud experience" in 80% of JDs at 12–18 LPA.</div></div>
+    </div>
+    <div class="reject-item">
+      <span class="reject-icon" aria-hidden="true">🚫</span>
+      <div><div class="reject-title">DSA gaps — LeetCode mediums are a wall</div><div class="reject-fix">Fix: 60–70 curated problems. Don't go random. Focus on arrays, strings, hashmaps, BFS/DFS, sliding window.</div></div>
+    </div>
+    <div class="reject-item" style="border:none">
+      <span class="reject-icon" aria-hidden="true">🚫</span>
+      <div><div class="reject-title">No GitHub with real code</div><div class="reject-fix">Fix: One pinned project with commits spanning 3+ months signals genuine work, not a weekend project.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Salary trajectory — realistic targets</div>
+    <div class="salary-bar-wrap" style="margin-top:12px">
+      <div class="salary-row"><span class="salary-lbl">Now</span><div class="salary-bar-bg2"><div class="salary-fill" style="width:22%;background:#888780"></div></div><span class="salary-amt">6.6 LPA</span></div>
+      <div class="salary-row"><span class="salary-lbl">Month 4</span><div class="salary-bar-bg2"><div class="salary-fill" style="width:40%;background:#378ADD"></div></div><span class="salary-amt">12 LPA</span></div>
+      <div class="salary-row"><span class="salary-lbl">Best case</span><div class="salary-bar-bg2"><div class="salary-fill" style="width:60%;background:#1D9E75"></div></div><span class="salary-amt">18 LPA</span></div>
+    </div>
+    <div class="card-sub" style="font-size:12px">12 LPA in 3–4 months is very realistic. 18 LPA requires 1–2 strong system design rounds + cloud deployment on résumé. Both are achievable by Month 4 if you execute.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Stop learning these — they waste your 2 hours</div>
+    <div class="stop-item"><span class="stop-x">✕</span><div><div class="stop-text">Advanced Angular (RxJS deep-dives, NgRx)</div><div class="stop-why">You're not applying for Senior Angular roles. Mid-level is sufficient for full-stack JDs.</div></div></div>
+    <div class="stop-item"><span class="stop-x">✕</span><div><div class="stop-text">ASP.NET MVC (old framework)</div><div class="stop-why">Every job wants .NET Core. MVC is legacy. Don't spend another minute on it.</div></div></div>
+    <div class="stop-item"><span class="stop-x">✕</span><div><div class="stop-text">Entity Framework deep internals</div><div class="stop-why">Know how to use it, not build it. Dapper + raw SQL is often more impressive in interviews.</div></div></div>
+    <div class="stop-item"><span class="stop-x">✕</span><div><div class="stop-text">Azure / GCP right now</div><div class="stop-why">AWS has 65%+ share in Indian startups. Master one cloud first. Azure only if a target company uses it.</div></div></div>
+    <div class="stop-item" style="border:none"><span class="stop-x">✕</span><div><div class="stop-text">LeetCode hard problems</div><div class="stop-why">12–18 LPA companies almost never ask hards. Stop chasing them. Nail mediums instead.</div></div></div>
+  </div>
+</div>
+
+<!-- 4-MONTH ROADMAP -->
+<div id="roadmap" class="section">
+  <div class="card" style="margin-bottom:8px">
+    <div class="card-sub">Each month builds on the last. Don't jump ahead. The sequence is deliberate — you can't demo microservices without Docker, can't deploy to AWS without something to deploy.</div>
+  </div>
+
+  <div class="month-block">
+    <div class="month-title">Month 1 — Foundation Hardening</div>
+    <div class="month-focus">Focus: DSA + .NET Core depth + Git hygiene</div>
+    <div class="card-sub">
+      Week 1–2: LeetCode Easy/Medium — Arrays, Strings, HashMaps (20 problems). Don't brute-force — learn the pattern.<br><br>
+      Week 3: .NET Core deep dive — Middleware pipeline, Dependency Injection, async/await, IHostedService, background tasks. Know these cold — they appear in 90% of backend interviews.<br><br>
+      Week 4: Dapper + Raw SQL performance queries. Write 3 complex stored procedures. Learn query plans / indexes. This alone separates mid from senior in SQL interviews.<br><br>
+      <span class="badge badge-info">Deliverable</span> 20 LeetCode problems logged. SQL query optimisation demo. Clean GitHub profile.
+    </div>
+  </div>
+
+  <div class="month-block">
+    <div class="month-title">Month 2 — Microservices + Docker</div>
+    <div class="month-focus">Focus: Split a monolith, containerise it, wire services together</div>
+    <div class="card-sub">
+      Week 5–6: Docker — images, containers, volumes, networking, docker-compose. Deploy your existing .NET project in Docker. This is non-negotiable.<br><br>
+      Week 7: Design 2–3 microservices communicating via REST + RabbitMQ (for async). Start your production project (see Project tab).<br><br>
+      Week 8: Redis for caching + distributed session. JWT auth across services (one auth service, two consumer services).<br><br>
+      <span class="badge badge-info">Deliverable</span> docker-compose.yml with 3 services running locally. RabbitMQ message flowing between two services.
+    </div>
+  </div>
+
+  <div class="month-block">
+    <div class="month-title">Month 3 — Cloud + CI/CD</div>
+    <div class="month-focus">Focus: Deploy to AWS, automate deployments, earn the cloud bullet point</div>
+    <div class="card-sub">
+      Week 9–10: AWS free tier — EC2 (run your API), RDS (Postgres), S3 (file uploads), ECR (push Docker image). IAM basics. Do this hands-on, not via courses alone.<br><br>
+      Week 11: GitHub Actions — CI pipeline that builds, tests, and pushes Docker image to ECR. CD that pulls and restarts on EC2. This is a real pipeline, not a toy.<br><br>
+      Week 12: HTTPS with Let's Encrypt + Nginx reverse proxy on EC2. Cloudwatch basics for logs. Your project is now live on a public URL.<br><br>
+      <span class="badge badge-success">Deliverable</span> Live project URL on AWS. GitHub Actions badge showing "passing". Add to résumé immediately.
+    </div>
+  </div>
+
+  <div class="month-block" style="border-color:var(--color-border-info)">
+    <div class="month-title" style="color:var(--color-text-info)">Month 4 — System Design + Interview Sprint</div>
+    <div class="month-focus" style="color:var(--color-text-success)">Focus: Active applications + mock interviews + system design depth</div>
+    <div class="card-sub">
+      Week 13: System design — URL shortener (in depth). Caching, DB sharding, rate limiting, CDN. Draw it, explain it, code the core.<br><br>
+      Week 14: System design — Notification system (push/email/SMS). Message queues, fan-out, failure handling. Second design.<br><br>
+      Week 15–16: Apply to 20–30 companies simultaneously. Do 2 mock interviews per week on Pramp or with a peer. Refine résumé bullet points to show impact not tasks.<br><br>
+      <span class="badge badge-success">Deliverable</span> 20+ applications sent. 2 system design diagrams ready to draw on whiteboard. Offer in hand.
+    </div>
+  </div>
+</div>
+
+<!-- WEEKLY MAP -->
+<div id="weekly" class="section">
+  <div class="card-sub" style="margin-bottom:12px;font-size:13px">16-week breakdown. Each week has one primary topic and one coding/building task. Never mix more than two subjects in a week — it fragments focus.</div>
+  <div class="week-grid">
+    <div class="week-card"><div class="week-num">Week 1</div><div class="week-topic">DSA: Arrays & Hashmaps</div><div class="week-task">10 LeetCode Easy/Medium</div></div>
+    <div class="week-card"><div class="week-num">Week 2</div><div class="week-topic">DSA: Strings & Sliding Window</div><div class="week-task">10 more LeetCode mediums</div></div>
+    <div class="week-card"><div class="week-num">Week 3</div><div class="week-topic">.NET Core internals</div><div class="week-task">Build custom middleware + DI demo</div></div>
+    <div class="week-card"><div class="week-num">Week 4</div><div class="week-topic">SQL: Dapper + query tuning</div><div class="week-task">3 complex SPs + execution plans</div></div>
+    <div class="week-card"><div class="week-num">Week 5</div><div class="week-topic">Docker fundamentals</div><div class="week-task">Containerise existing .NET API</div></div>
+    <div class="week-card"><div class="week-num">Week 6</div><div class="week-topic">Docker Compose + networking</div><div class="week-task">Multi-service docker-compose.yml</div></div>
+    <div class="week-card"><div class="week-num">Week 7</div><div class="week-topic">Microservices design</div><div class="week-task">Start project: Auth + Product service</div></div>
+    <div class="week-card"><div class="week-num">Week 8</div><div class="week-topic">Redis + RabbitMQ</div><div class="week-task">Async messaging between services</div></div>
+    <div class="week-card"><div class="week-num">Week 9</div><div class="week-topic">AWS: EC2 + RDS + S3</div><div class="week-task">Deploy project manually first</div></div>
+    <div class="week-card"><div class="week-num">Week 10</div><div class="week-topic">AWS: ECR + IAM + VPC basics</div><div class="week-task">Push Docker image to ECR</div></div>
+    <div class="week-card"><div class="week-num">Week 11</div><div class="week-topic">GitHub Actions CI/CD</div><div class="week-task">Build → test → deploy pipeline live</div></div>
+    <div class="week-card"><div class="week-num">Week 12</div><div class="week-topic">HTTPS + Nginx + CloudWatch</div><div class="week-task">Public URL + logs working</div></div>
+    <div class="week-card"><div class="week-num">Week 13</div><div class="week-topic">System Design: URL Shortener</div><div class="week-task">Draw + explain end to end</div></div>
+    <div class="week-card"><div class="week-num">Week 14</div><div class="week-topic">System Design: Notifications</div><div class="week-task">Fan-out, queues, failure modes</div></div>
+    <div class="week-card"><div class="week-num">Week 15</div><div class="week-topic">Mock interviews</div><div class="week-task">2× Pramp mocks + résumé polish</div></div>
+    <div class="week-card" style="border:0.5px solid var(--color-border-info)"><div class="week-num" style="color:var(--color-text-info)">Week 16</div><div class="week-topic">Active applications</div><div class="week-task">20+ companies applied</div></div>
+  </div>
+</div>
+
+<!-- DAILY PLAN -->
+<div id="daily" class="section">
+  <div class="card">
+    <div class="card-title">Daily 2-hour plan — non-negotiable structure</div>
+    <div class="card-sub" style="margin-bottom:12px">Split into two 60-min blocks. Block A = learning. Block B = building. Never do both in the same hour.</div>
+    <div class="day-row">
+      <span class="day-time">0:00 – 0:05</span>
+      <div><div class="day-act">Review yesterday's notes (5 min)</div><div class="day-note">Not optional. Spaced repetition is free recall gains.</div></div>
+    </div>
+    <div class="day-row">
+      <span class="day-time">0:05 – 1:00</span>
+      <div><div class="day-act">Block A — Learn (55 min)</div><div class="day-note">Month 1: DSA problem (25 min) + .NET/SQL concept (30 min). Month 2: Docker/microservices tutorial + implement one piece. Month 3: AWS console hands-on or GitHub Actions config. Month 4: System design video + hand-draw the diagram.</div></div>
+    </div>
+    <div class="day-row">
+      <span class="day-time">1:00 – 1:55</span>
+      <div><div class="day-act">Block B — Build (55 min)</div><div class="day-note">Always coding. Never watching tutorials. If you can't write it from memory, you haven't learned it. Push to GitHub every session.</div></div>
+    </div>
+    <div class="day-row" style="margin:0">
+      <span class="day-time">1:55 – 2:00</span>
+      <div><div class="day-act">Log what you built + one thing you'll do tomorrow</div><div class="day-note">Accountability. Also gives you material for interview STAR answers.</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Weekend rules — don't skip these</div>
+    <div class="card-sub">
+      <strong>Saturday (3 hrs):</strong> Build a meaningful chunk of the production project. No tutorials. Pure building.<br><br>
+      <strong>Sunday (2 hrs):</strong> 1 LeetCode medium + 1 system design review (or mock interview in Month 4). Then rest. Burnout at Month 2 kills the entire plan.<br><br>
+      <span class="badge badge-warning">Hard rule</span> One full day completely off per week. No coding, no YouTube. Your brain consolidates during rest.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Resources — curated, not overwhelming</div>
+    <div class="card-sub">
+      <span class="badge badge-neutral">DSA</span> NeetCode 150 list (not random LeetCode) — curated by pattern<br><br>
+      <span class="badge badge-neutral">System Design</span> "System Design Interview" by Alex Xu Vol 1 — read chapters, not YouTube<br><br>
+      <span class="badge badge-neutral">Docker</span> Official Docker "Get Started" docs + TechWorld with Nana (YouTube, free)<br><br>
+      <span class="badge badge-neutral">AWS</span> AWS free tier account + Stephane Maarek's Associate course (Udemy, buy on sale ₹500)<br><br>
+      <span class="badge badge-neutral">Microservices</span> Microsoft eShopOnContainers GitHub repo — reference architecture in .NET<br><br>
+      <span class="badge badge-neutral">CI/CD</span> GitHub Actions official docs — no course needed, just do it
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT -->
+<div id="project" class="section">
+  <div class="card">
+    <div class="card-title">Project: E-Commerce Order Management System</div>
+    <div class="card-sub" style="margin-bottom:10px">Why this project: it naturally maps to microservices, requires async messaging, needs auth, has real DB work, and every interviewer immediately understands what it does. No explaining needed.</div>
+    <span class="badge badge-info">3 Microservices</span>
+    <span class="badge badge-success">Docker + AWS</span>
+    <span class="badge badge-warning">RabbitMQ</span>
+    <span class="badge badge-neutral">Redis</span>
+  </div>
+
+  <div class="card">
+    <div class="proj-section">
+      <div class="proj-label">Service 1 — Auth Service (.NET Core)</div>
+      <div class="proj-item">JWT token issue + refresh token<span class="badge badge-info">C#</span></div>
+      <div class="proj-item">User registration + bcrypt password<span class="badge badge-info">C#</span></div>
+      <div class="proj-item">Role-based access (Admin / Customer)<span class="badge badge-info">C#</span></div>
+      <div class="proj-item" style="border:none">PostgreSQL for users<span class="badge badge-neutral">PG</span></div>
+    </div>
+    <div class="proj-section">
+      <div class="proj-label">Service 2 — Product + Inventory Service (.NET Core)</div>
+      <div class="proj-item">REST CRUD with pagination + filtering<span class="badge badge-info">C#</span></div>
+      <div class="proj-item">Redis cache for product listings<span class="badge badge-warning">Redis</span></div>
+      <div class="proj-item">SQL Server for products + stock<span class="badge badge-info">SQL</span></div>
+      <div class="proj-item" style="border:none">Publishes "inventory.updated" event to RabbitMQ<span class="badge badge-warning">MQ</span></div>
+    </div>
+    <div class="proj-section">
+      <div class="proj-label">Service 3 — Order Service (.NET Core)</div>
+      <div class="proj-item">Create / cancel / track orders<span class="badge badge-info">C#</span></div>
+      <div class="proj-item">Consumes inventory events from RabbitMQ<span class="badge badge-warning">MQ</span></div>
+      <div class="proj-item">Publishes "order.placed" event (email trigger)<span class="badge badge-warning">MQ</span></div>
+      <div class="proj-item" style="border:none">Background worker for order status updates<span class="badge badge-info">IHosted</span></div>
+    </div>
+    <div class="proj-section">
+      <div class="proj-label">Infrastructure</div>
+      <div class="proj-item">Nginx API Gateway routes to 3 services<span class="badge badge-neutral">Nginx</span></div>
+      <div class="proj-item">docker-compose.yml (all 3 services + Rabbit + Redis)<span class="badge badge-neutral">Docker</span></div>
+      <div class="proj-item">GitHub Actions: build → test → push to ECR → deploy to EC2<span class="badge badge-success">CI/CD</span></div>
+      <div class="proj-item" style="border:none">Hosted on AWS (EC2 + RDS + S3 for product images)<span class="badge badge-success">AWS</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">What interviewers will ask about this project</div>
+    <div class="card-sub">
+      "Why microservices over monolith?" — Answer: team scalability, independent deployments, tech freedom per service. Be honest that for this scale a monolith was also fine — that nuance impresses seniors.<br><br>
+      "How do services communicate?" — REST for sync (order status), RabbitMQ for async (stock updates, email triggers). Know when you chose which and why.<br><br>
+      "What happens if RabbitMQ goes down?" — Retry with exponential backoff + dead-letter queue. If you've actually implemented this, say so.<br><br>
+      "How does your CI/CD work?" — GitHub push → Actions builds image → pushes to ECR → SSH to EC2 → docker pull + restart. Walk them through it step by step.
+    </div>
+  </div>
+</div>
+
+<!-- INTERVIEW PREP -->
+<div id="interview" class="section">
+  <div class="card">
+    <div class="card-title">Strategy: breadth first, then go deep on hot topics</div>
+    <div class="card-sub">At 12–18 LPA, interviewers care about: (1) can you design systems (2) can you write decent code (3) do you understand what you've built. In that order. Not LeetCode Hards. Not obscure .NET trivia.</div>
+  </div>
+
+  <div class="int-phase">
+    <div class="section-head">Month 1–3: Preparation mode</div>
+    <div class="int-item">Solve 60–70 NeetCode problems (patterns, not random)</div>
+    <div class="int-item">Write STAR answers for 5 behavioral scenarios from your 6 years</div>
+    <div class="int-item">Prepare 3 "tell me about a hard problem" stories — one per project at your job</div>
+    <div class="int-item">Update résumé with impact bullets: "Reduced API response time 40% by adding Redis cache" not "worked on caching"</div>
+    <div class="int-item">Start applying from Month 3 Week 11 — don't wait for Month 4</div>
+  </div>
+
+  <div class="int-phase">
+    <div class="section-head">Month 4: Full interview sprint</div>
+    <div class="int-item">Apply to 5–7 companies per week (mix of startups + mid-size product companies)</div>
+    <div class="int-item">Do 2 mock interviews per week on Pramp.com (free, peer-to-peer)</div>
+    <div class="int-item">After each real interview: write down every question asked within 1 hour</div>
+    <div class="int-item">Practice system design out loud — talking through it matters more than knowing it silently</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Target companies at 12–18 LPA (realistic for your profile)</div>
+    <div class="card-sub">
+      <span class="badge badge-success">Best fit</span> Series A/B startups with .NET or polyglot backend — less DSA gate-keeping, more system thinking<br><br>
+      <span class="badge badge-info">Good fit</span> Mid-size product companies (Razorpay, Zoho, Chargebee, Freshworks, BrowserStack tier)<br><br>
+      <span class="badge badge-warning">Tough but possible</span> FAANG-adjacent (Atlassian, Twilio India, Expedia) — need stronger DSA + system design<br><br>
+      <span class="badge badge-neutral">Avoid right now</span> Services companies (Infosys, Wipro, TCS) — they'll offer 8–9 LPA max at your level and waste 2 months
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Résumé bullet formula — stop listing responsibilities</div>
+    <div class="card-sub">
+      <span class="badge badge-danger">Wrong</span> "Developed REST APIs using ASP.NET Core"<br>
+      <span class="badge badge-success">Right</span> "Built 12 REST APIs serving 50k daily requests, reduced avg response time from 800ms to 180ms by introducing Redis cache layer"<br><br>
+      <span class="badge badge-danger">Wrong</span> "Worked on SQL Server database optimization"<br>
+      <span class="badge badge-success">Right</span> "Optimised 3 critical reports by rewriting N+1 queries and adding composite indexes, cutting load time from 14s to 1.2s"<br><br>
+      Every bullet: Action + What + Metric. If you don't have a metric, estimate one honestly.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Salary negotiation — don't leave 2–4 LPA on the table</div>
+    <div class="card-sub">
+      Never disclose your current 6.6 LPA first. When asked, say "I'm targeting 14–16 LPA based on market rates for this role and my background." That anchors the negotiation high.<br><br>
+      Always negotiate after the verbal offer. Say: "I'm excited about this role. I did have one other discussion at 15 LPA — is there flexibility?" Even if the other offer is informal, this is fair to say.<br><br>
+      <span class="badge badge-warning">Key insight</span> Companies targeting senior roles budget 14–18 LPA. If you apply and clear, they'll pay it. The gap between 6.6 and 14 feels huge to you — it's normal budget to them.
+    </div>
+  </div>
+
+  <button class="cta-btn" onclick="sendPrompt('Give me a mock system design interview: design a URL shortener like bit.ly')">Practice system design now ↗</button>
+  <button class="cta-btn" style="margin-left:8px" onclick="sendPrompt('Give me 10 mid-level .NET Core interview questions with ideal answers')">Practice .NET questions ↗</button>
+</div>
+</div>
+
+<script>
+function show(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>
