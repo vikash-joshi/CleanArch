@@ -1,0 +1,1 @@
+public record ProductCreatedEvent(Guid ProductId, string Name);
