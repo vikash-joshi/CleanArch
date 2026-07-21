@@ -10,6 +10,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
 builder.Services.AddControllers();
+builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
 builder.Services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
 var app = builder.Build();
 
