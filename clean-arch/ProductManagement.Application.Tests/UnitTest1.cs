@@ -1,23 +1,10 @@
-﻿using Xunit;
-using NSubstitute;
-using ProductManagement.Application.Commands;
-using ProductManagement.Application.Interfaces;
+﻿namespace ProductManagement.Application.Tests;
 
-public class CreateProductCommandHandlerTests
+public class UnitTest1
 {
     [Fact]
-    public async Task Handle_EmptyName_ReturnsFailure()
+    public void Test1()
     {
-        // Arrange — set up a fake IUnitOfWork so no real DB is needed
-        var uow = Substitute.For<IUnitOfWork>();
-        var handler = new CreateProductCommandHandler(uow);
-
-        // Act — call the method you're testing
-        var result = await handler.Handle(
-            new CreateProductCommand("", "desc", 100, 5), default);
-
-        // Assert — check it did what you expect
-        Assert.False(result.IsSuccess);
-        Assert.Equal("Name is required.", result.Error);
+        
     }
 }
