@@ -1,12 +1,22 @@
 using MediatR;
 using ProductManagement.Application.Interfaces;
+using ProductManagement.Application.BusinessLogics;
 namespace ProductManagement.Application.Commands;
+
 
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Result<Guid>>
 {
     private readonly IUnitOfWork _uow;
 
-    public CreateProductCommandHandler(IUnitOfWork uow) => _uow = uow;
+    private readonly ProductBusinessRules Rules;
+    
+    
+
+    public CreateProductCommandHandler(IUnitOfWork uow,ProductBusinessRules Rules)
+    {
+      _uow = uow;  
+      this.Rules = Rules;
+    } 
 
     public async Task<Result<Guid>> Handle(CreateProductCommand command, CancellationToken ct)
     {
@@ -15,6 +25,12 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
         if (command.Price < 0)
             return Result<Guid>.Failure("Price cannot be negative.");
+
+        var result = await Rules.EnsureNameIsUnique(command.Name,ct);
+        if(!string.IsNullOrEmpty(result))
+        {
+            return Result<Guid>.Failure(result);
+        }
 
         var product = new Product(
             Guid.NewGuid(),

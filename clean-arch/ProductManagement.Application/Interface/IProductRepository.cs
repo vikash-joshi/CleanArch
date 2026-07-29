@@ -8,4 +8,5 @@ public interface IProductRepository
     Task AddAsync(Product product, CancellationToken ct);
     Task UpdateAsync(Product product, CancellationToken ct);
     Task DeleteAsync(Guid id, CancellationToken ct);
+    Task<bool> ExistsByNameAsync(string Name, CancellationToken ct);
 }

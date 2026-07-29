@@ -50,6 +50,11 @@
         _products.RemoveAll(p => p.Id == id);
         return Task.CompletedTask;
     }
+
+    public async Task<bool> ExistsByNameAsync(string Name, CancellationToken ct)
+    {
+      return _products.Any(p => p.Name == Name);
+    }
 }
 
 

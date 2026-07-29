@@ -1,6 +1,7 @@
 using NSubstitute;
 using ProductManagement.Application.Interfaces;
 using ProductManagement.Application.Commands;
+using ProductManagement.Application.BusinessLogics;
 
 public class CreateProductCommandHandlerTests
 {
@@ -9,8 +10,9 @@ public class CreateProductCommandHandlerTests
     {
         // Arrange
         var uow = Substitute.For<IUnitOfWork>();
+        var rules = Substitute.For<ProductBusinessRules>();
 
-        var handler = new CreateProductCommandHandler(uow);
+        var handler = new CreateProductCommandHandler(uow,rules);
 
         var result = await handler.Handle(new CreateProductCommand( "","Vikash",99,10),default);
 
@@ -25,8 +27,9 @@ public class CreateProductCommandHandlerTests
     {
         // Arrange
         var uow = Substitute.For<IUnitOfWork>();
+                var rules = Substitute.For<ProductBusinessRules>();
 
-        var handler = new CreateProductCommandHandler(uow);
+        var handler = new CreateProductCommandHandler(uow,rules);
 
         var result = await handler.Handle(new CreateProductCommand("Vicky","Vikash",99,10),default);
 

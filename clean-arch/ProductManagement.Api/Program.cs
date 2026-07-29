@@ -1,5 +1,10 @@
+using FluentValidation;
+using MediatR;
+using ProductManagement.Application.Behaviours;
+using ProductManagement.Application.BusinessLogics;
 using ProductManagement.Application.Commands;
 using ProductManagement.Application.Interfaces;
+using ProductManagement.Application.Validators;
 using ProductManagement.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +17,10 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
 builder.Services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
+builder.Services.AddScoped<ProductBusinessRules>();
+
+builder.Services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator).Assembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
