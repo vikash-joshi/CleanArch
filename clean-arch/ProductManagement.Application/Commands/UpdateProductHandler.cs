@@ -1,14 +1,20 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using ProductManagement.Application.Commands;
 using ProductManagement.Application.Interfaces;
 
 public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Result<bool>>
 {
     public readonly IUnitOfWork _unitOfWork;
+    private readonly ILogger<UpdateProductCommandHandler> _logger;
 
-    public UpdateProductCommandHandler(IUnitOfWork _unitOfWork) => this._unitOfWork = _unitOfWork;
+    public UpdateProductCommandHandler(IUnitOfWork _unitOfWork, ILogger<UpdateProductCommandHandler> _logger)
+    {
+        this._unitOfWork = _unitOfWork;
+        this._logger = _logger;
+    }
 
-    public async Task<Result<bool>> Handle(UpdateProductCommand command,CancellationToken token)
+    public async Task<Result<bool>> Handle(UpdateProductCommand command, CancellationToken token)
     {
         var product = await _unitOfWork.Products.GetByIdAsync(new Guid(command.id), token);
         if (product == null)
@@ -16,12 +22,12 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
             return Result<bool>.Failure("Product not found.");
         }
 
-          if (string.IsNullOrEmpty(product?.Name))
+        if (string.IsNullOrEmpty(product?.Name))
         {
             return Result<bool>.Failure("Product Name Is Blank.");
         }
 
-        product.UpdateDetails(command.Name, command.Description, new Money(command.Price,"USD"),command.Stock);
+        product.UpdateDetails(command.Name, command.Description, new Money(command.Price, "USD"), command.Stock);
 
         await _unitOfWork.Products.UpdateAsync(product, token);
         await _unitOfWork.SaveChangesAsync(token);

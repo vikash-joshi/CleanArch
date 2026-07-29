@@ -1,12 +1,18 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using ProductManagement.Application.Commands;
 using ProductManagement.Application.Interfaces;
 
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, Result<bool>>
 {
     public readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<DeleteProductCommandHandler> _logger;
 
-    public DeleteProductCommandHandler(IUnitOfWork _unitOfWork) => this._unitOfWork = _unitOfWork;
+    public DeleteProductCommandHandler(IUnitOfWork _unitOfWork, ILogger<DeleteProductCommandHandler> _logger)
+    {
+        this._logger = _logger;
+        this._unitOfWork = _unitOfWork;
+    } 
 
     public async Task<Result<bool>> Handle(DeleteProductCommand command,CancellationToken token)
     {

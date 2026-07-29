@@ -21,6 +21,9 @@ builder.Services.AddScoped<ProductBusinessRules>();
 
 builder.Services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator).Assembly);
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
