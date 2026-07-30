@@ -9,6 +9,9 @@ public class Product
     public int StockQuantity { get; private set; }
     public bool IsDeleted { get; private set; }
     public DateTime? DeletedAt { get; private set; }
+    public Guid? CategoryId { get; private set; }
+
+    
 
 
     public Product(Guid id, string name, string description, Money price, int stockQuantity)
@@ -44,4 +47,6 @@ public class Product
         Price = price;
         StockQuantity = stockQuantity;
     }
+
+    public void AssignCategory(Guid? categoryId) => CategoryId = categoryId;
 }

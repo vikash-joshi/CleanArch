@@ -1,37 +1,38 @@
-    using ProductManagement.Application.Interfaces;
+using ProductManagement.Application.Interfaces;
 
-    namespace ProductManagement.Infrastructure;
+namespace ProductManagement.Infrastructure;
 
-    public sealed class InMemoryUnitOfWork : IUnitOfWork
+public sealed class InMemoryUnitOfWork : IUnitOfWork
+{
+    public InMemoryUnitOfWork(IProductRepository products, ICategoryRepository categories)
     {
-         
-        public InMemoryUnitOfWork(IProductRepository products) => Products = products;
-
-
-        public IProductRepository Products { get; }
-
-        public Task<int> SaveChangesAsync(CancellationToken ct)
-        {
-            return Task.FromResult(1);
-        }
+        Products = products;
+        Categories = categories;
     }
 
-    public class InMemoryProductRepository : IProductRepository
+    public IProductRepository Products { get; }
+
+    public ICategoryRepository Categories { get; }
+
+    public Task<int> SaveChangesAsync(CancellationToken ct)
+    {
+        return Task.FromResult(1);
+    }
+}
+
+public class InMemoryProductRepository : IProductRepository, ICategoryRepository
 {
     private readonly List<Product> _products = new();
+    private readonly List<Category> _category = new();
 
     public Task<Product?> GetByIdAsync(Guid id, CancellationToken ct) =>
         Task.FromResult(_products.FirstOrDefault(p => p.Id == id));
 
     public Task<IEnumerable<Product>> GetByNameAsync(string Name, CancellationToken ct) => Task.FromResult(_products.Where(p => p.Name.ToLower().Contains(Name.ToLower())));
     
-
-        
-    
     public Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct) =>
-        Task.FromResult(_products.Where(x=>!x.IsDeleted).AsEnumerable());
+        Task.FromResult(_products.Where(x => !x.IsDeleted).AsEnumerable());
 
-    
     public Task AddAsync(Product product, CancellationToken ct)
     {
         _products.Add(product);
@@ -53,9 +54,49 @@
 
     public async Task<bool> ExistsByNameAsync(string Name, CancellationToken ct)
     {
-      return _products.Any(p => p.Name == Name);
+        return _products.Any(p => p.Name == Name);
     }
+    
+    public async Task<bool> ExistsCategoryByNameAsync(string Name, CancellationToken ct)
+    {
+        return _category.Any(c => c.Name == Name);
+    }
+    
+    public Task<Category?> GetCategoryByIdAsync(Guid id, CancellationToken ct)
+    {
+        return Task.FromResult(_category.FirstOrDefault(p => p.Id == id));
+    }
+    public Task<IEnumerable<Category>> GetAllCategoryAsync(CancellationToken ct) => Task.FromResult(_category.AsEnumerable());
+    public Task AddCategoryAsync(Category category, CancellationToken ct)
+    {
+        _category.Add(category);
+        return Task.CompletedTask;
+    }
+    public Task UpdateCategoryAsync(Category category, CancellationToken ct)
+    {
+        var existIndex = _category.FindIndex(p => p.Id == category.Id);
+        if (existIndex >= 0) _category[existIndex] = category;
+        return Task.CompletedTask;
+    }
+    public Task DeleteCategoryAsync(Guid id, CancellationToken ct)
+    {
+        var index = _products.FindIndex(p => p.CategoryId == id);
+        if (index >= 0)
+        {
+            return Task.FromException(new InvalidOperationException("Cannot delete category because it is associated with existing products."));
+        }
+        _category.RemoveAll(p => p.Id == id);
+
+        return Task.CompletedTask;
+    }
+
+    public Task<IEnumerable<Product>> GetProductsByCategoryQuery(Guid categoryId, CancellationToken ct)
+    {
+        var productByCategory = _products.Where(p => !p.IsDeleted && p.CategoryId == categoryId).ToList();
+        return Task.FromResult(productByCategory.AsEnumerable());
+    }
+
 }
 
 
-  
+

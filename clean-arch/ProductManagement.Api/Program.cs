@@ -10,12 +10,14 @@ using ProductManagement.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
+builder.Services.AddSingleton<InMemoryProductRepository>();
+builder.Services.AddSingleton<IProductRepository>(sp => sp.GetRequiredService<InMemoryProductRepository>());
+builder.Services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<InMemoryProductRepository>());
 builder.Services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
 builder.Services.AddScoped<ProductBusinessRules>();
 
@@ -29,7 +31,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
