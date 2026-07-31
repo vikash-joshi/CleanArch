@@ -9,4 +9,6 @@ public interface IProductRepository
     Task UpdateAsync(Product product, CancellationToken ct);
     Task DeleteAsync(Guid id, CancellationToken ct);
     Task<bool> ExistsByNameAsync(string Name, CancellationToken ct);
+
+    Task AssignCategoryToProductAsync(Guid productId, Guid categoryId, CancellationToken ct);
 }

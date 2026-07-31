@@ -2,3 +2,5 @@ public record CreateProductRequest(string Name, string Description, decimal Pric
 public record UpdateProductRequest(string id, string Name, string Description, decimal Price, int StockQuantity);
 
 public record DeleteProductRequest(string id);
+
+public record AssignCategoryToProductRequest(string ProductId, string CategoryId);

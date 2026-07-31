@@ -20,11 +20,13 @@ builder.Services.AddSingleton<IProductRepository>(sp => sp.GetRequiredService<In
 builder.Services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<InMemoryProductRepository>());
 builder.Services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
 builder.Services.AddScoped<ProductBusinessRules>();
-
+builder.Services.AddScoped<CategoryBusinessRules>();
 builder.Services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator).Assembly);
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
+
+
 
 var app = builder.Build();
 

@@ -10,6 +10,7 @@ public class Product
     public bool IsDeleted { get; private set; }
     public DateTime? DeletedAt { get; private set; }
     public Guid? CategoryId { get; private set; }
+    public string? CategoryName { get; set; }
 
     
 

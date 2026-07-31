@@ -65,4 +65,14 @@ public class ProductsController : ControllerBase
         return product is not null ? Ok(product): NotFound("Not Found");
     }
 
+    [HttpPost("AssignCategory")]
+    public async Task<IActionResult> AssignCategory(AssignCategoryToProductRequest req, CancellationToken ct)
+    {
+        var result = await _mediator.Send(
+            new AssignCategoryToProductCommand(new Guid(req.ProductId), new Guid(req.CategoryId)), ct);
+
+        return result.IsSuccess
+            ? Ok(result.Value)
+            : BadRequest(result.Error);
+    }
 }

@@ -11,7 +11,7 @@ public class CreateProductCommandValidator : AbstractValidator<CreateProductComm
     {
         RuleFor(x=>x.Name)
         .NotEmpty().WithMessage("Name Is Required Validator")
-        .MinimumLength(20).WithMessage("Name Cannot be Less than 20 Character");
+        .MinimumLength(5).WithMessage("Name Cannot be Less than 5 Character");
         
     }
 }

@@ -1,4 +1,5 @@
 using ProductManagement.Application.Interfaces;
+using system.Text.Json;
 
 namespace ProductManagement.Infrastructure;
 
@@ -30,8 +31,26 @@ public class InMemoryProductRepository : IProductRepository, ICategoryRepository
 
     public Task<IEnumerable<Product>> GetByNameAsync(string Name, CancellationToken ct) => Task.FromResult(_products.Where(p => p.Name.ToLower().Contains(Name.ToLower())));
     
-    public Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct) =>
-        Task.FromResult(_products.Where(x => !x.IsDeleted).AsEnumerable());
+    public Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct)
+    {
+        var Products = _products.Where(x => !x.IsDeleted).AsEnumerable();
+        Console.WriteLine("Products Count: " + JsonConvert.SerializeObject(Products));
+        
+        var Categories = _category.AsEnumerable();
+Console.WriteLine("Products Count: " + JsonConvert.SerializeObject(Categories));
+        var final = Products.Join(Categories, p => p.CategoryId, c => c.Id, (p, c) =>
+        {
+            p.CategoryName = c.Name;
+            
+            return p;
+        });
+Console.WriteLine("Products Count: " + JsonConvert.SerializeObject(final));
+        
+
+
+        return Task.FromResult(final.AsEnumerable());
+    }
+        
 
     public Task AddAsync(Product product, CancellationToken ct)
     {
@@ -94,6 +113,16 @@ public class InMemoryProductRepository : IProductRepository, ICategoryRepository
     {
         var productByCategory = _products.Where(p => !p.IsDeleted && p.CategoryId == categoryId).ToList();
         return Task.FromResult(productByCategory.AsEnumerable());
+    }
+
+    public Task AssignCategoryToProductAsync(Guid productId, Guid categoryId, CancellationToken ct)
+    {
+        var product = _products.FirstOrDefault(p => p.Id == productId);
+        if (product != null)
+        {
+            product.AssignCategory(categoryId);  
+        }
+        return Task.CompletedTask;
     }
 
 }
