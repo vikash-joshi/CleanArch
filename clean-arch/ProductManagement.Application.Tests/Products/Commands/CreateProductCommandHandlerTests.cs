@@ -5,39 +5,40 @@ using ProductManagement.Application.BusinessLogics;
 using Microsoft.Extensions.Logging;
 public class CreateProductCommandHandlerTests
 {
-[Fact]
-    public async Task Handle_ProductDoesNotExist_ReturnsNull()
-    {
-        // Arrange
-        var uow = Substitute.For<IUnitOfWork>();
-        var rules = Substitute.For<ProductBusinessRules>();
-        var logger = Substitute.For<ILogger<CreateProductCommandHandler>>();
+  [Fact]
+  public async Task Handle_ProductDoesNotExist_ReturnsNull()
+  {
+    // Arrange
+    var uow = Substitute.For<IUnitOfWork>();
+    var rules = new ProductBusinessRules(Substitute.For<IProductRepository>());
+    var logger = Substitute.For<ILogger<CreateProductCommandHandler>>();
 
 
-        var handler = new CreateProductCommandHandler(uow,rules,logger);
+    var handler = new CreateProductCommandHandler(uow, rules, logger);
 
-        var result = await handler.Handle(new CreateProductCommand( "","Vikash",99,10),default);
+    var result = await handler.Handle(new CreateProductCommand("", "Vikash", 99, 10), default);
 
-      Assert.False(result.IsSuccess);
-        Assert.Equal("Name is required.", result.Error);
+    Assert.False(result.IsSuccess);
+    Assert.Equal("Name is required.", result.Error);
 
-        
-    }
 
-    [Fact]
-    public async Task Handle_Product_Success()
-    {
-        // Arrange
-        var uow = Substitute.For<IUnitOfWork>();
-                var rules = Substitute.For<ProductBusinessRules>();
-                        var logger = Substitute.For<ILogger<CreateProductCommandHandler>>();
+  }
 
-        var handler = new CreateProductCommandHandler(uow,rules,logger);
+  [Fact]
+  public async Task Handle_Product_Success()
+  {
+    // Arrange
+    var uow = Substitute.For<IUnitOfWork>();
+    
+    var rules = new ProductBusinessRules(Substitute.For<IProductRepository>());
+    var logger = Substitute.For<ILogger<CreateProductCommandHandler>>();
 
-        var result = await handler.Handle(new CreateProductCommand("Vicky","Vikash",99,10),default);
+    var handler = new CreateProductCommandHandler(uow, rules, logger);
 
-      Assert.True(result.IsSuccess);
+    var result = await handler.Handle(new CreateProductCommand("Vicky", "Vikash", 99, 10), default);
 
-        
-    }
+    Assert.True(result.IsSuccess);
+
+
+  }
 }

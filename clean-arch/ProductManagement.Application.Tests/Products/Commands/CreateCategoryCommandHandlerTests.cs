@@ -10,7 +10,7 @@ public class CreateCategoryCommandHandlerTests
     {
         // Arrange
         var uow = Substitute.For<IUnitOfWork>();
-        var rules = Substitute.For<CategoryBusinessRules>();
+        var rules = new CategoryBusinessRules(Substitute.For<ICategoryRepository>());
         var logger = Substitute.For<ILogger<CreateCategoryCommandHandler>>();
 
 
@@ -29,7 +29,7 @@ public class CreateCategoryCommandHandlerTests
     {
         // Arrange
         var uow = Substitute.For<IUnitOfWork>();
-                var rules = Substitute.For<CategoryBusinessRules>();
+                var rules = new CategoryBusinessRules(Substitute.For<ICategoryRepository>());
                         var logger = Substitute.For<ILogger<CreateCategoryCommandHandler>>();
 
         var handler = new CreateCategoryCommandHandler(uow,rules,logger);

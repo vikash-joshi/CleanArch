@@ -1,5 +1,6 @@
 using ProductManagement.Application.Interfaces;
-using system.Text.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ProductManagement.Infrastructure;
 
@@ -34,17 +35,17 @@ public class InMemoryProductRepository : IProductRepository, ICategoryRepository
     public Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct)
     {
         var Products = _products.Where(x => !x.IsDeleted).AsEnumerable();
-        Console.WriteLine("Products Count: " + JsonConvert.SerializeObject(Products));
+        Console.WriteLine("Products Count: " + JsonSerializer.Serialize(Products));
         
         var Categories = _category.AsEnumerable();
-Console.WriteLine("Products Count: " + JsonConvert.SerializeObject(Categories));
+Console.WriteLine("Products Count: " + JsonSerializer.Serialize(Categories));
         var final = Products.Join(Categories, p => p.CategoryId, c => c.Id, (p, c) =>
         {
             p.CategoryName = c.Name;
             
             return p;
         });
-Console.WriteLine("Products Count: " + JsonConvert.SerializeObject(final));
+Console.WriteLine("Products Count: " + JsonSerializer.Serialize(final));
         
 
 
