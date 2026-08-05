@@ -4,6 +4,7 @@ using ProductManagement.Application.Behaviours;
 using ProductManagement.Application.BusinessLogics;
 using ProductManagement.Application.Commands;
 using ProductManagement.Application.Interfaces;
+using ProductManagement.Application.Strategies;
 using ProductManagement.Application.Validators;
 using ProductManagement.Infrastructure;
 
@@ -25,7 +26,7 @@ builder.Services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator)
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
-
+builder.Services.AddScoped<PricingStrategyFactory>();
 
 
 var app = builder.Build();
