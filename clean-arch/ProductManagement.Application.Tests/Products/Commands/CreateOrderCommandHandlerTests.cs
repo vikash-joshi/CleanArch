@@ -23,8 +23,17 @@ public class CreateOrderCommandHandlerTest
         var product = new Product(Guid.NewGuid(), "Item", "desc", new Money(100, "INR"), 1);
         var result = new BulkDiscountPricingStrategy().CalculatePrice(product, 11);
 
-        Assert.Equal(4500,result);
+        Assert.Equal(990,result);
 
+    }
+
+    [Fact]
+    public void Handle_SeasonalDiscount()
+    {
+        var product = new Product(Guid.NewGuid(), "Item", "desc", new Money(100, "INR"), 1);
+        var result = new SeasonalPricingStrategy().CalculatePrice(product, 15);
+
+        Assert.Equal(1200,result);
     }
 
 }

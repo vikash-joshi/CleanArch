@@ -21,11 +21,12 @@ public class BulkDiscountPricingStrategy : IPriceStrategy
 
 public class SeasonalPricingStrategy : IPriceStrategy
 {
-   private readonly int[] _saleMonths = { 11, 12 }; // e.g. Nov/Dec sale
+   private readonly int[] _saleMonths = { 8, 12 }; // e.g. Nov/Dec sale
 
     public decimal CalculatePrice(Product product, int quantity)
     {
         var total = product.Price.Amount * quantity;
+        
         return _saleMonths.Contains(DateTime.UtcNow.Month) ? total * 0.8m : total; // 20% off
     }
 }

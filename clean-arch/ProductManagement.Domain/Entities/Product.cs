@@ -1,6 +1,7 @@
+using ProductManagement.Domain.Common;
 
 
-public class Product
+public class Product : Entity
 {
     public Guid Id { get; private set; }
     public string Name { get; private set; }
@@ -25,6 +26,8 @@ public class Product
         Description = description;
         Price = price;
         StockQuantity = stockQuantity;
+        AddDomainEvent(
+            new ProductCreatedEvent(Id, Name));
     }
 
     public void DecreaseStock(int qty)
