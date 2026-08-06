@@ -1,7 +1,6 @@
-using System.Collections;
-namespace ProductManagement.Domain.Common.Events;
+using ProductManagement.Domain.Common;
 
 public interface IDomainEventDispatcher
 {
-    Task DispatchAsync(IEnumerable<DomainEvent> domainEvents, CancellationToken cancellationToken = default);
+    Task DispatchAndClearEvents(IEnumerable<Entity> entitiesWithEvents, CancellationToken ct);
 }

@@ -4,7 +4,7 @@ using ProductManagement.Domain.Common;
 
 namespace ProductManagement.Application.EventHanlders;
 
-public class ProductCreatedEventHandler : INotificationHandler<ProductCreatedEvent>
+public class ProductCreatedEventHandler : IDomainEventHandler<ProductCreatedEvent>
 {
     private readonly ILogger<ProductCreatedEventHandler> _logger;
 

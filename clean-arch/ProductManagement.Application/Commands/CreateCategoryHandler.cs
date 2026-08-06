@@ -14,7 +14,7 @@ public class CreateCategoryCommandHandler: IRequestHandler<CreateCategoryCommand
     {
         _uow = uow;
         _rules = rules;
-        this._logger = _logger;
+        _logger = logger;
     }
 
     public async Task<Result<Guid>> Handle(CreateCategoryCommand req,CancellationToken ct)

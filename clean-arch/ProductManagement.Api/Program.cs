@@ -3,9 +3,11 @@ using MediatR;
 using ProductManagement.Application.Behaviours;
 using ProductManagement.Application.BusinessLogics;
 using ProductManagement.Application.Commands;
+using ProductManagement.Application.EventHanlders;
 using ProductManagement.Application.Interfaces;
 using ProductManagement.Application.Strategies;
 using ProductManagement.Application.Validators;
+using ProductManagement.Domain.Common;
 using ProductManagement.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,10 +18,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
 builder.Services.AddControllers();
-builder.Services.AddSingleton<InMemoryProductRepository>();
-builder.Services.AddSingleton<IProductRepository>(sp => sp.GetRequiredService<InMemoryProductRepository>());
-builder.Services.AddSingleton<ICategoryRepository>(sp => sp.GetRequiredService<InMemoryProductRepository>());
 builder.Services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
+builder.Services.AddScoped<IProductRepository>(sp => sp.GetRequiredService<IUnitOfWork>().Products);
+builder.Services.AddScoped<ICategoryRepository>(sp => sp.GetRequiredService<IUnitOfWork>().Categories);
 builder.Services.AddScoped<ProductBusinessRules>();
 builder.Services.AddScoped<CategoryBusinessRules>();
 builder.Services.AddValidatorsFromAssembly(typeof(CreateProductCommandValidator).Assembly);
@@ -27,6 +28,8 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>();
 builder.Services.AddScoped<PricingStrategyFactory>();
+builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
+builder.Services.AddScoped<IDomainEventHandler<ProductCreatedEvent>, ProductCreatedEventHandler>();
 
 
 var app = builder.Build();

@@ -18,7 +18,7 @@ public class HttpContextCurrentUserService : ICurrentUserService
         }
     }
 
-    public string UserName
+    public string? UserName
     {
         get
         {

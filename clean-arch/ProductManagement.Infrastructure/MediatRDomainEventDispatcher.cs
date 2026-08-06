@@ -1,25 +1,34 @@
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using ProductManagement.Application.Events;
+using ProductManagement.Application.Interfaces;
 using ProductManagement.Domain.Common;
 namespace ProductManagement.Infrastructure;
 
-public class MediatRDomainEventDispatcher
+public class MediatRDomainEventDispatcher : IDomainEventDispatcher
 {
-    private readonly IPublisher _publisher;
-    public MediatRDomainEventDispatcher(IPublisher publisher) => _publisher = publisher;
+    private readonly IServiceProvider _serviceProvider;
 
-    public async Task DispatchAndClearEvents(IEnumerable<Entity> entities, CancellationToken ct)
+    public MediatRDomainEventDispatcher(IServiceProvider serviceProvider)
+        => _serviceProvider = serviceProvider;
+
+    public async Task DispatchAndClearEvents(IEnumerable<Entity> entitiesWithEvents, CancellationToken ct)
     {
-        foreach (var entity in entities)
+        foreach (var entity in entitiesWithEvents)
         {
             var events = entity.GetDomainEvents().ToList();
             entity.ClearDomainEvents();
 
             foreach (var domainEvent in events)
             {
-                var notificationType = typeof(DomainEventNotification<>).MakeGenericType(domainEvent.GetType());
-                var notification = Activator.CreateInstance(notificationType, domainEvent);
-                await _publisher.Publish(notification!, ct);
+                var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(domainEvent.GetType());
+                var handlers = _serviceProvider.GetServices(handlerType);
+
+                foreach (var handler in handlers)
+                {
+                    var method = handlerType.GetMethod("Handle");
+                    await (Task)method!.Invoke(handler, new object[] { domainEvent, ct })!;
+                }
             }
         }
     }
