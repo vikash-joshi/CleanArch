@@ -5,20 +5,28 @@ using ProductManagement.Domain.Common;
 namespace ProductManagement.Infrastructure
 {
 
+public sealed class InMemoryDatabase
+{
+    public List<Product> Products { get; } = new();
+    public List<Category> Categories { get; } = new();
+}
+
 public sealed class InMemoryUnitOfWork : IUnitOfWork
 {
-    private readonly List<Product> _products = new();
-    private readonly List<Category> _categories = new();
     private readonly IDomainEventDispatcher _dispatcher;
+    private readonly List<Product> _products;
+    private readonly List<Category> _categories;
 
-    public InMemoryUnitOfWork(IDomainEventDispatcher dispatcher)
+    public InMemoryUnitOfWork(InMemoryDatabase database, IDomainEventDispatcher dispatcher)
     {
         _dispatcher = dispatcher;
+        _products = database.Products;
+        _categories = database.Categories;
         Products = new InMemoryProductRepository(_products, _categories);
         Categories = new InMemoryCategoryRepository(_categories, _products);
     }
 
-    public IProductRepository Products { get; }
+    public IProductRepository Products { get; set; }
     public ICategoryRepository Categories { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken ct)
