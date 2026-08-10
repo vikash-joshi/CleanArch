@@ -1,7 +1,8 @@
 using MediatR;
-using ProductManagement.Application.Interfaces;
-using ProductManagement.Application.BusinessLogics;
 using Microsoft.Extensions.Logging;
+using ProductManagement.Application.BusinessLogics;
+using ProductManagement.Application.Interfaces;
+using ProductManagement.Domain.Factories;
 namespace ProductManagement.Application.Commands;
 
 
@@ -42,12 +43,18 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             return Result<Guid>.Failure(result);
         }
 
-        var product = new Product(
-            Guid.NewGuid(),
-            command.Name,
-            command.Description,
-            new Money(command.Price, "INR"),
-            command.Stock);
+        Product product;
+        try
+        {
+            product = ProductFactory.Create(command.Name, command.Description, command.Price, command.Stock);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogWarning("Product creation failed: {Reason}", ex.Message);
+            return Result<Guid>.Failure(ex.Message);
+        }
+
+        
 
         await _uow.Products.AddAsync(product, ct);
         await _uow.SaveChangesAsync(ct);

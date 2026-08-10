@@ -9,6 +9,7 @@ using ProductManagement.Application.Interfaces;
 using ProductManagement.Application.Strategies;
 using ProductManagement.Application.Validators;
 using ProductManagement.Domain.Common;
+using ProductManagement.Domain.Factories;
 using ProductManagement.Infrastructure;
 using ProductManagement.Infrastructure.Decorators;
 
@@ -49,7 +50,7 @@ builder.Services.AddScoped<ICurrentUserService, HttpContextCurrentUserService>()
 builder.Services.AddScoped<PricingStrategyFactory>();
 builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
 builder.Services.AddScoped<IDomainEventHandler<ProductCreatedEvent>, ProductCreatedEventHandler>();
-
+builder.Services.AddScoped<ProductFactory>();
 
 var app = builder.Build();
 
