@@ -1,0 +1,835 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:transparent;color:var(--text-primary)}
+.cover{background:linear-gradient(135deg,#0F2A52,#1D4ED8);border-radius:12px;padding:2rem;color:#fff;margin-bottom:1.5rem}
+.cover h1{font-size:22px;font-weight:500;color:#93C5FD;margin-bottom:.5rem}
+.cover h2{font-size:18px;font-weight:500;color:#fff;margin-bottom:.5rem}
+.cover p{font-size:13px;color:#BAE6FD;line-height:1.6}
+.cover .salary{font-size:16px;font-weight:500;color:#FDE68A;margin:.75rem 0 .25rem}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.nav button{background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:6px 14px;font-size:13px;cursor:pointer;color:var(--text-secondary);transition:all .15s}
+.nav button:hover{background:var(--surface-2);color:var(--text-primary)}
+.nav button.active{background:#0F2A52;color:#fff;border-color:#0F2A52}
+.section{display:none}.section.active{display:block}
+.phase-banner{border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem;color:#fff}
+.phase-1{background:#0F2A52}.phase-2{background:#134E4A}.phase-3{background:#4C1D95}.phase-4{background:#4C1D95}
+.phase-banner .label{font-size:12px;color:#A5B4FC;font-weight:500;margin-bottom:.25rem}
+.phase-banner h2{font-size:18px;color:#fff;font-weight:500;margin-bottom:.25rem}
+.phase-banner .meta{font-size:12px;color:#BAE6FD}
+.week-header{display:grid;grid-template-columns:120px 1fr;border-radius:var(--radius);overflow:hidden;margin-bottom:.75rem;border:0.5px solid var(--border)}
+.week-left{background:#1D4ED8;padding:.75rem;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.week-left span{font-size:12px;font-weight:500}
+.week-left .num{font-size:16px;font-weight:500}
+.week-right{background:#0F2A52;padding:.75rem;display:flex;align-items:center;color:#fff;font-size:13px;font-weight:500}
+.day-card{border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:.5rem}
+.day-header{display:grid;grid-template-columns:56px 1fr;cursor:pointer}
+.day-num{background:#0F2A52;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem;color:#fff}
+.day-num .lbl{font-size:10px;color:#93C5FD;font-weight:500}
+.day-num .n{font-size:18px;font-weight:500}
+.day-title{background:#1D4ED8;padding:.5rem .75rem;display:flex;align-items:center;color:#fff;font-size:13px;font-weight:500}
+.day-body{display:none}
+.day-card.open .day-body{display:block}
+.row{display:grid;grid-template-columns:110px 1fr}
+.row-label{padding:.5rem .6rem;font-size:11px;font-weight:500;display:flex;align-items:flex-start;justify-content:center;text-align:center}
+.row-content{padding:.5rem .75rem;font-size:12px;line-height:1.6;color:var(--text-secondary)}
+.theory .row-label{background:#BFDBFE;color:#1e3a6e}
+.theory .row-content{background:#EFF6FF}
+.practical .row-label{background:#BBF7D0;color:#14532D}
+.practical .row-content{background:#F0FDF4}
+.note .row-label{background:#FED7AA;color:#7C2D12}
+.note .row-content{background:#FFF7ED}
+.goal .row-label{background:#FED7AA;color:#7C2D12}
+.goal .row-content{background:#FFF7ED}
+.code .row-label{background:#99F6E4;color:#134E4A}
+.code .row-content{background:#F0FDFA;font-family:var(--font-mono);font-size:11px}
+.warning .row-label{background:#FCA5A5;color:#991B1B}
+.warning .row-content{background:#FEF2F2}
+.resource .row-label{background:#DDD6FE;color:#4C1D95}
+.resource .row-content{background:#F5F3FF}
+.info-box{border:0.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:.75rem 0}
+.info-box-header{padding:.5rem .75rem;color:#fff;font-size:13px;font-weight:500}
+.info-box-row{padding:.4rem .75rem;font-size:12px;color:var(--text-secondary);border-top:0.5px solid var(--border)}
+.info-box-row:nth-child(odd){background:var(--surface-1)}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin:.75rem 0}
+.tbl th{background:#0F2A52;color:#fff;padding:.4rem .6rem;text-align:left;font-weight:500}
+.tbl td{padding:.4rem .6rem;border:0.5px solid var(--border);vertical-align:top;color:var(--text-secondary)}
+.tbl tr:nth-child(odd) td{background:var(--surface-1)}
+.tbl td:first-child{color:var(--text-primary);font-weight:500;white-space:nowrap}
+.q-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.q-item{border:0.5px solid var(--border);border-radius:var(--radius);padding:.6rem .75rem}
+.q-item .q{font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:.3rem}
+.q-item .a{font-size:11px;color:var(--text-secondary);line-height:1.5}
+.resources-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem}
+.res-card{border:0.5px solid var(--border);border-radius:var(--radius);padding:.75rem;background:var(--surface-1)}
+.res-card h4{font-size:13px;font-weight:500;margin-bottom:.4rem;color:var(--text-primary)}
+.res-card p,.res-card li{font-size:11px;color:var(--text-secondary);line-height:1.6}
+.res-card ul{padding-left:1rem}
+.final-box{background:#0F2A52;border-radius:12px;padding:1.5rem;text-align:center;color:#fff;margin-top:1rem}
+.final-box h3{font-size:16px;color:#FDE68A;margin-bottom:.5rem;font-weight:500}
+.final-box p{font-size:12px;color:#BAE6FD;line-height:1.7}
+.final-box .motto{font-size:14px;color:#FDE68A;font-weight:500;margin-top:.75rem}
+</style>
+
+<h2 class="sr-only">16-week day-by-day .NET career guide from 6.6 LPA to 12–18 LPA</h2>
+
+<div class="cover">
+  <div class="label" style="font-size:12px;color:#93C5FD;font-weight:500">THE COMPLETE 16-WEEK GUIDE</div>
+  <h2 style="font-size:18px;margin:.3rem 0">Week-by-Week · Day-by-Day</h2>
+  <p>Theory + Practical + Code + Deliverables for Every Single Day</p>
+  <p style="margin-top:.4rem">Phase 1: Clean Architecture · Phase 2: Docker + Redis + RabbitMQ<br>Phase 3: CI/CD + AWS · Phase 4: System Design + Interviews</p>
+  <div class="salary">6.6 LPA ──────────────────→ 12–18 LPA</div>
+  <p>120 Days · 2 Hours/Day · Zero Generic Advice</p>
+</div>
+
+<div class="nav">
+  <button class="active" onclick="show('overview')">Overview</button>
+  <button onclick="show('howto')">How to Use</button>
+  <button onclick="show('phase1')">Phase 1 — Foundation</button>
+  <button onclick="show('phase2')">Phase 2 — Infrastructure</button>
+  <button onclick="show('phase3')">Phase 3 — Deployment</button>
+  <button onclick="show('phase4')">Phase 4 — Interviews</button>
+  <button onclick="show('qna')">Top 30 Q&amp;A</button>
+  <button onclick="show('resources')">Resources</button>
+</div>
+
+<div id="overview" class="section active">
+  <table class="tbl">
+    <thead><tr><th style="width:160px">Week / Phase</th><th>Focus + End-of-Week Deliverable</th></tr></thead>
+    <tbody>
+      <tr><td>Week 1 — Phase 1</td><td>Clean Architecture: solution setup, Domain + Application + Infrastructure + API layers wired. One CRUD feature end-to-end.</td></tr>
+      <tr><td>Week 2 — Phase 1</td><td>Repository pattern, MediatR CQRS, Result pattern. Full feature: Products CRUD done. Every layer tested.</td></tr>
+      <tr><td>Week 3 — Phase 1</td><td>SOLID + Design Patterns applied IN the project: Strategy, Observer, Factory. Not textbook — your code.</td></tr>
+      <tr><td>Week 4 — Phase 1</td><td>PostgreSQL schema design from requirements. EF Core migrations. Raw query optimisation. Month 1 ✓</td></tr>
+      <tr><td>Week 5 — Phase 2</td><td>Docker: Dockerfile for your API, docker-compose with Postgres, volumes, env vars, health checks.</td></tr>
+      <tr><td>Week 6 — Phase 2</td><td>Redis: distributed cache, cache-aside pattern, TTL, invalidation. API responses cached end-to-end.</td></tr>
+      <tr><td>Week 7 — Phase 2</td><td>RabbitMQ: events published + consumed, DLQ, retry logic. Async flow working in compose.</td></tr>
+      <tr><td>Week 8 — Phase 2</td><td>Split into 2 microservices. Services talk via RabbitMQ. One docker-compose starts everything. Month 2 ✓</td></tr>
+      <tr><td>Week 9 — Phase 3</td><td>GitHub Actions: CI pipeline (test → build → push ECR). Branch protection. Secrets management.</td></tr>
+      <tr><td>Week 10 — Phase 3</td><td>AWS core: VPC, EC2, RDS, S3, IAM. Project deployed manually on EC2 with RDS database.</td></tr>
+      <tr><td>Week 11 — Phase 3</td><td>ECS Fargate: containers live on internet. ALB + task definitions. CD pipeline fully automated.</td></tr>
+      <tr><td>Week 12 — Phase 3</td><td>CloudWatch logs + alarms + Serilog structured logging. Health checks. Month 3 ✓</td></tr>
+      <tr><td>Week 13 — Phase 4</td><td>HLD: URL Shortener + Notification Service + File Upload system. Each designed from scratch.</td></tr>
+      <tr><td>Week 14 — Phase 4</td><td>LLD: Rate Limiter + Parking Lot + Task Scheduler. C# class diagrams + implementation.</td></tr>
+      <tr><td>Week 15 — Phase 4</td><td>ADRs, Swagger docs, README, architecture diagram, Loom video. Interview stories written.</td></tr>
+      <tr><td>Week 16 — Phase 4</td><td>20 applications sent. Resume tailored. Salary negotiation scripted. Offers being evaluated. Month 4 ✓</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="howto" class="section">
+  <div class="info-box">
+    <div class="info-box-header" style="background:#1D4ED8">Your daily 2-hour structure — follow this every single day</div>
+    <div class="info-box-row">0:00 – 0:05 → Recall: from memory, recall what you built yesterday (no peeking)</div>
+    <div class="info-box-row">0:05 – 1:00 → Theory block: read, study, understand the concept</div>
+    <div class="info-box-row">1:00 – 1:55 → Practical block: type code, run it, break it, fix it</div>
+    <div class="info-box-row">1:55 – 2:00 → Log: 1-sentence commit message AND push to GitHub</div>
+    <div class="info-box-row">Saturday → 3-hour extended build: work on the weekly deliverable</div>
+    <div class="info-box-row">Sunday → 1-hour review only: no new topics, no tutorials, just revisit</div>
+  </div>
+  <div class="info-box">
+    <div class="info-box-header" style="background:#991B1B">Non-negotiable rules</div>
+    <div class="info-box-row">1. NEVER copy-paste code you did not understand line by line</div>
+    <div class="info-box-row">2. Push to GitHub EVERY session — no exceptions, even 5-line changes</div>
+    <div class="info-box-row">3. If you miss a day: continue from where you stopped, do NOT double up</div>
+    <div class="info-box-row">4. Start applying from Week 11. Do NOT wait until you feel ready</div>
+    <div class="info-box-row">5. Build depth, not breadth. Know 5 things cold vs 15 things vaguely</div>
+  </div>
+</div>
+
+<div id="phase1" class="section">
+  <div class="phase-banner phase-1">
+    <div class="label">PHASE 1</div>
+    <h2>FOUNDATION</h2>
+    <div class="meta">Days 1–28 · Build a .NET Web API with Clean Architecture from scratch. Every layer wired by you.</div>
+  </div>
+  <div id="days-phase1"></div>
+</div>
+
+<div id="phase2" class="section">
+  <div class="phase-banner phase-2">
+    <div class="label">PHASE 2</div>
+    <h2>INFRASTRUCTURE</h2>
+    <div class="meta">Days 29–56 · Docker + Redis + RabbitMQ + split into microservices. Your system goes from local to production-like.</div>
+  </div>
+  <div id="days-phase2"></div>
+</div>
+
+<div id="phase3" class="section">
+  <div class="phase-banner phase-3">
+    <div class="label">PHASE 3</div>
+    <h2>DEPLOYMENT</h2>
+    <div class="meta">Days 57–84 · CI/CD pipeline. Deploy to AWS. Live URL with HTTPS. Automated on every push.</div>
+  </div>
+  <div id="days-phase3"></div>
+</div>
+
+<div id="phase4" class="section">
+  <div class="phase-banner phase-4">
+    <div class="label">PHASE 4</div>
+    <h2>INTERVIEW READINESS</h2>
+    <div class="meta">Days 85–112 · System Design. LLD. Documentation. 20 Applications. Salary negotiation. Offer.</div>
+  </div>
+  <div id="days-phase4"></div>
+</div>
+
+<div id="qna" class="section">
+  <div class="q-grid" id="qna-grid"></div>
+</div>
+
+<div id="resources" class="section">
+  <div class="resources-grid">
+    <div class="res-card">
+      <h4>📚 Books</h4>
+      <ul>
+        <li>"Clean Architecture" — Robert Martin. Read Ch 22. ₹2000.</li>
+        <li>"System Design Interview" Vol 1 — Alex Xu. Read cover to cover.</li>
+        <li>"Designing Data-Intensive Applications" — Kleppmann. Reference for advanced HLD.</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>🌐 Free Resources</h4>
+      <ul>
+        <li>NeetCode.io — 150 curated LeetCode problems by pattern</li>
+        <li>Microsoft eShopOnContainers (GitHub) — reference .NET microservices</li>
+        <li>".NET Microservices Architecture" PDF — free at aka.ms/microservicesebook</li>
+        <li>TechWorld with Nana (YouTube) — Docker + Kubernetes</li>
+        <li>GitHub Actions Official Docs — docs.github.com/actions</li>
+      </ul>
+    </div>
+    <div class="res-card">
+      <h4>📦 NuGet Packages</h4>
+      <ul>
+        <li>MediatR, FluentValidation, BCrypt.Net-Next</li>
+        <li>StackExchange.Redis, RabbitMQ.Client, Dapper</li>
+        <li>Polly, Serilog + Sinks</li>
+        <li>Testcontainers-dotnet</li>
+        <li>AWSSDK.S3, Amazon.XRay.Recorder.Core</li>
+        <li>Swashbuckle.AspNetCore</li>
+      </ul>
+    </div>
+  </div>
+  <div class="final-box">
+    <h3>THE ONLY THING BETWEEN YOU AND 14 LPA</h3>
+    <p>is 2 hours a day, 112 days, and this document.<br>
+    You have 6 years of real experience. You have the foundation.<br>
+    What you lacked was a structured path and the evidence to prove your skills.</p>
+    <div class="motto">Push to GitHub every day. Build. Deploy. Document. Apply.</div>
+  </div>
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function makeDay(num,title,sections,phaseColor){
+  const colors={theory:'theory',practical:'practical',note:'note',goal:'goal',code:'code',warning:'warning',resource:'resource'};
+  const labels={theory:'📖 THEORY',practical:'⚙️ PRACTICAL',note:'⚡ KEY INSIGHT',goal:'🎯 DELIVERABLE',code:'💻 CODE TASK',warning:'⚠️ WATCH OUT',resource:'📚 RESOURCES'};
+  const rows=sections.map(s=>`<div class="row ${colors[s.t]||'theory'}"><div class="row-label">${labels[s.t]||s.t}</div><div class="row-content">${s.c}</div></div>`).join('');
+  return `<div class="day-card" id="day${num}"><div class="day-header" onclick="toggleDay(${num})"><div class="day-num"><div class="lbl">DAY</div><div class="n">${num}</div></div><div class="day-title">${title}</div></div><div class="day-body">${rows}</div></div>`;
+}
+
+function toggleDay(n){
+  const c=document.getElementById('day'+n);
+  c.classList.toggle('open');
+}
+
+function weekHeader(w,title,phase,color){
+  return `<div class="week-header"><div class="week-left" style="background:${color}"><div class="num">WEEK ${w}</div><span>${phase}</span></div><div class="week-right">${title}</div></div>`;
+}
+
+const P1=[
+  weekHeader(1,'Clean Architecture: Solution Setup + Domain + Application Layers','Phase 1 · Days 1–7','#1D4ED8'),
+  makeDay(1,'Clean Architecture: Solution Structure + Domain Layer',[
+    {t:'theory',c:'Read: Clean Architecture by Robert Martin — Chapter 22. Key takeaway: dependencies always point INWARD. Domain knows nothing about Infrastructure. Understand: Entities (business rules), Use Cases (application rules), Interface Adapters (controllers), Frameworks (DB, web). Draw this on paper before touching VS Code.'},
+    {t:'practical',c:'Create solution: <code>dotnet new sln -n ProductCatalog</code>. Create 4 projects: Domain, Application, Infrastructure, API. Add references (Application→Domain, Infrastructure→Application, API→Infrastructure+Application). In Domain: create Entities/Product.cs with Id(Guid), Name, Description, Price(decimal), StockQuantity(int), CreatedAt, UpdatedAt. Zero NuGet packages in Domain.'},
+    {t:'note',c:'Domain project must have ZERO external dependencies. If you find yourself adding a NuGet package to Domain, you are doing it wrong. Domain is pure C# classes and interfaces only.'},
+    {t:'goal',c:'4-project solution compiles. Domain project has Product entity. Push to GitHub with message "Day 1: Solution structure + Domain entity".'}
+  ]),
+  makeDay(2,'Domain Layer: Value Objects + Domain Exceptions + Aggregates',[
+    {t:'theory',c:'Domain-Driven Design fundamentals. Entity vs Value Object: Entity has identity (Product with Id), Value Object has no identity (Money, Address). Aggregate Root controls all access. Domain Events — things that happened (ProductCreated, PriceChanged) decouple side effects from business logic.'},
+    {t:'practical',c:'Build in Domain: (1) ValueObjects/Money.cs: record Money(decimal Amount, string Currency) with validation. (2) Exceptions/DomainException.cs + ProductExceptions.cs. (3) Events/ProductCreatedEvent.cs. (4) Update Product: private setters, constructor validates (name not empty, price not negative), method DecreaseStock(int qty) throws InsufficientStockException.'},
+    {t:'note',c:'Private setters on entity properties enforce that all changes go through methods. Entity constructors validate invariants — if you have an entity in memory, it is ALWAYS valid.'},
+    {t:'goal',c:'Product entity with validation, Money value object, domain exceptions. Zero external dependencies. Push.'}
+  ]),
+  makeDay(3,'Application Layer: Interfaces + DTOs + Use Case Structure',[
+    {t:'theory',c:'Application layer defines WHAT the system does (use cases), not HOW. It depends on interfaces (defined in Application), not concrete implementations (in Infrastructure). IProductRepository lives in Application — Infrastructure implements it. This is Dependency Inversion Principle in action.'},
+    {t:'practical',c:'In Application project: (1) Interfaces/IProductRepository.cs: GetByIdAsync, GetAllAsync, AddAsync, UpdateAsync, DeleteAsync. (2) Interfaces/IUnitOfWork.cs: IProductRepository Products; Task SaveChangesAsync(). (3) DTOs/ProductDto.cs. (4) DTOs/CreateProductRequest.cs and UpdateProductRequest.cs. (5) Common/PagedResult.cs generic wrapper.'},
+    {t:'goal',c:'Application project: 2 interfaces, 3 DTOs, PagedResult. No NuGet packages except DI abstractions. Push.'}
+  ]),
+  makeDay(4,'Application Layer: MediatR + First Use Case (GetProductById)',[
+    {t:'theory',c:'CQRS — separate reading (queries) from writing (commands). Commands change state. Queries read state, never change it. MediatR: Controller sends Request → MediatR finds Handler → Handler executes → returns Response. Benefit: controllers become thin. All business logic in handlers — testable without HTTP context.'},
+    {t:'practical',c:'dotnet add package MediatR. Create: (1) GetProductByIdQuery.cs: record GetProductByIdQuery(Guid Id) : IRequest<ProductDto?>. (2) GetProductByIdQueryHandler.cs: implements IRequestHandler, constructor takes IUnitOfWork, Handle method fetches and maps to DTO. (3) ProductMappingExtensions.cs: static ToDto() extension.'},
+    {t:'code',c:'public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, ProductDto?> { private readonly IUnitOfWork _uow; public GetProductByIdQueryHandler(IUnitOfWork uow) => _uow = uow; public async Task<ProductDto?> Handle(GetProductByIdQuery req, CancellationToken ct) { var product = await _uow.Products.GetByIdAsync(req.Id, ct); return product?.ToDto(); } }'},
+    {t:'note',c:'Handlers depend only on IUnitOfWork (an interface). You can unit-test this handler with a mock IUnitOfWork — no HTTP, no DB needed. That is the entire point of Clean Architecture.'},
+    {t:'goal',c:'GetProductById query + handler working. Unit test: mock IUnitOfWork, verify handler returns null for non-existent Id. Push.'}
+  ]),
+  makeDay(5,'Application Layer: CreateProduct Command + Result Pattern',[
+    {t:'theory',c:'Result pattern — instead of throwing exceptions for expected failures, return a Result<T> object that carries either a success value or an error. Exceptions are expensive (stack unwind). Result makes error handling explicit and forces callers to handle failures.'},
+    {t:'practical',c:'Build: (1) Common/Result.cs: generic with Success(T value) and Failure(string error) factory methods. (2) CreateProductCommand.cs: record with Name, Description, Price, Stock. (3) CreateProductCommandHandler.cs: validate inputs (return Failure if invalid), create Product entity, add to repo, save, return Success(product.Id).'},
+    {t:'code',c:'var product = new Product(Guid.NewGuid(), command.Name, command.Description, new Money(command.Price, "INR"), command.Stock);\nawait _uow.Products.AddAsync(product, ct);\nawait _uow.SaveChangesAsync(ct);\nreturn Result<Guid>.Success(product.Id);'},
+    {t:'goal',c:'CreateProduct command + handler + Result pattern. Unit test: verify handler returns Failure when name is empty. Push.'}
+  ]),
+  makeDay(6,'Saturday: API Layer + First Working Endpoint',[
+    {t:'theory',c:'Minimal API vs Controller-based in ASP.NET Core 8. For Clean Architecture, controllers are thin: parse request → map to MediatR command → send → map result to HTTP response. Problem Details (RFC 7807) as standard error format — always return {type, title, status, detail} for errors.'},
+    {t:'practical',c:'3 hours: (1) Configure MediatR in API project. (2) Create ProductsController: [ApiController][Route("api/v1/products")]. Inject IMediator. POST endpoint → maps to CreateProductCommand → returns 201. GET /{id} → GetProductByIdQuery → 200 or 404. (3) Add GlobalExceptionHandler: catches DomainException→400, NotFoundException→404, others→500. (4) Add Swagger: AddEndpointsApiExplorer + AddSwaggerGen. Run and test via Swagger UI.'},
+    {t:'code',c:'[HttpPost] public async Task<IActionResult> Create(CreateProductRequest req, CancellationToken ct) { var result = await _mediator.Send(new CreateProductCommand(req.Name, req.Description, req.Price, req.Stock), ct); return result.IsSuccess ? CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value) : BadRequest(result.Error); }'},
+    {t:'goal',c:'API starts. POST /api/v1/products returns 201. GET returns 404 (no DB yet). Swagger UI at /swagger. Push.'}
+  ]),
+  makeDay(7,'Sunday: Week 1 Review + Architecture Diagram',[
+    {t:'theory',c:'Review (60 min): Draw the Clean Architecture layers on paper with arrows showing dependencies. Trace one request: POST → Controller → Mediator → Handler → IUnitOfWork → returns. Answer out loud: Why does Application not depend on Infrastructure?'},
+    {t:'practical',c:'Write README.md: what it is, why Clean Architecture, the 4 layers, how to run. Draw ASCII architecture diagram. One LeetCode Easy: #1 Two Sum. Push.'},
+    {t:'note',c:'Week 1 checkpoint: you have a compilable Clean Architecture solution. The domain and application layers are fully independent of any framework. That is a genuine achievement.'}
+  ]),
+  weekHeader(2,'Repository Pattern + All CRUD + Unit Tests','Phase 1 · Days 8–14','#1D4ED8'),
+  makeDay(8,'Application Layer: Remaining Queries (GetAll, GetPaged)',[
+    {t:'theory',c:'Pagination patterns — offset pagination (OFFSET n ROWS FETCH NEXT n ROWS) vs cursor pagination (WHERE id > last_seen_id). Offset is simpler for your scale. Specification pattern — encapsulates query criteria in a class.'},
+    {t:'practical',c:'Build: (1) GetAllProductsQuery with Page, PageSize, SearchTerm?, CategoryId?. Handler returns PagedResult<ProductDto>. (2) InMemoryProductRepository.cs implementing IProductRepository with List<Product>. (3) Wire DI to use InMemoryProductRepository.'},
+    {t:'goal',c:'GET /api/v1/products?page=1&pageSize=10&search=laptop returns paginated list. Push.'}
+  ]),
+  makeDay(9,'Application Layer: UpdateProduct + DeleteProduct Commands',[
+    {t:'theory',c:'Optimistic vs Pessimistic concurrency. Optimistic: read, compute, write — fail if another writer changed data. Correct for web APIs. Soft delete: adds IsDeleted + DeletedAt — keeps audit trail, allows recovery.'},
+    {t:'practical',c:'Build UpdateProductCommand and DeleteProductCommand. Update handler: get by Id → if not found return Failure → call entity.Update() → save. Delete handler: soft delete — set IsDeleted=true. Add CRUD controller actions. Test all 5 via Swagger.'},
+    {t:'goal',c:'Full CRUD working: POST, GET/{id}, GET(paged), PUT/{id}, DELETE/{id}. All with Result pattern. Push.'}
+  ]),
+  makeDay(10,'Unit Tests: Application Layer — 100% Handler Coverage',[
+    {t:'theory',c:'Unit testing in Clean Architecture — Application layer is most important to test because it contains all business logic and can be tested without HTTP or DB. xUnit is the .NET standard. NSubstitute has cleaner syntax than Moq.'},
+    {t:'practical',c:'Create ProductCatalog.Tests project. dotnet add package NSubstitute. Write 7+ tests: GetProductById (exists → dto), (not found → null), CreateProduct (happy path → Success(Guid)), (empty name → Failure), (SaveChangesAsync called once), UpdateProduct (not found → Failure), DeleteProduct (sets IsDeleted=true).'},
+    {t:'code',c:'[Fact] public async Task Handle_ProductExists_ReturnsProductDto() { var repo = Substitute.For<IUnitOfWork>(); repo.Products.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns(new Product(...)); var handler = new GetProductByIdQueryHandler(repo); var result = await handler.Handle(new GetProductByIdQuery(Guid.NewGuid()), default); Assert.NotNull(result); }'},
+    {t:'goal',c:'7+ unit tests all passing (dotnet test). 0 failures. Push with "Day 10: Unit tests for all handlers".'}
+  ]),
+  makeDay(11,'SOLID Principles Applied: SRP + OCP in Your Code',[
+    {t:'theory',c:'OCP applied via MediatR pipelines: add validation behaviour without modifying existing handlers. Open for extension (new pipeline behaviour), closed for modification (existing handler untouched).'},
+    {t:'practical',c:'Implement MediatR Pipeline Behaviour for validation: (1) dotnet add package FluentValidation. (2) CreateProductCommandValidator: rules for Name, Price, Stock. (3) ValidationBehaviour<TRequest,TResponse>: runs validator, returns Result.Failure with validation errors if invalid. (4) Register: AddValidatorsFromAssembly + AddBehavior. POST with empty name now returns 400 automatically.'},
+    {t:'note',c:'This is OCP: you added validation (extension) without modifying CreateProductCommandHandler (closed for modification). The handler did not change.'},
+    {t:'goal',c:'POST with empty name returns 400 with validation errors. Handler code unchanged. Push.'}
+  ]),
+  makeDay(12,'SOLID: DIP + LSP + ISP — Dependency Inversion in Practice',[
+    {t:'practical',c:'Refactor: (1) Add ICurrentUserService interface to Application; implement HttpContextCurrentUserService in API reading from JWT claims. Register as Scoped. (2) Add ILogger<T> injection to all handlers — log: product created, not found, validation failed. (3) Run all tests — all should still pass.'},
+    {t:'goal',c:'ICurrentUserService implemented. All handlers log actions. All unit tests still pass. Push.'}
+  ]),
+  makeDay(13,'Saturday: Category Feature + Integration Between Features',[
+    {t:'practical',c:'3 hours: Build Category feature from scratch — same pattern as Product: Domain entity, Application CQRS, API controller. Link Product to Category: add CategoryId(Guid?) to Product. Add GetProductsByCategoryQuery. Write 5 unit tests for Category handlers. Verify all 10+ tests pass.'},
+    {t:'goal',c:'Category CRUD working. Products filterable by category. 10+ tests passing. Push.'}
+  ]),
+  makeDay(14,'Sunday: Week 2 Review + LeetCode',[
+    {t:'theory',c:'Review: Can you explain without notes: (1) Why Clean Architecture? (2) What is CQRS? (3) What is the Result pattern? (4) How does MediatR pipeline behaviour implement OCP?'},
+    {t:'practical',c:'LeetCode #206 Reverse Linked List + #121 Best Time to Buy and Sell Stock. 30 min max. Rest.'}
+  ]),
+  weekHeader(3,'Design Patterns Applied to Your Project','Phase 1 · Days 15–21','#1D4ED8'),
+  makeDay(15,'Strategy Pattern: Pricing Rules Engine',[
+    {t:'theory',c:'Strategy Pattern — defines a family of algorithms, encapsulates each one, makes them interchangeable. Use when: multiple ways to do something and algorithm should be selectable at runtime.'},
+    {t:'practical',c:'Build: IPricingStrategy interface with CalculatePrice(Product, int qty). Concrete strategies: StandardPricingStrategy, BulkDiscountPricingStrategy (10% off if qty>10), SeasonalPricingStrategy (20% off in sale month). PricingStrategyFactory selects correct strategy. Use in CreateOrderCommand handler.'},
+    {t:'note',c:'Without Strategy: one giant if-else block. With Strategy: each rule is isolated, testable, adding new rule does not touch existing code.'},
+    {t:'goal',c:'3 pricing strategies working. Factory selects correctly. 3 unit tests. Push.'}
+  ]),
+  makeDay(16,'Observer Pattern: Domain Events Dispatcher',[
+    {t:'theory',c:'Domain Events are the Observer pattern at domain level. When Product is created, it raises ProductCreatedEvent. Side effects (send email, update search index, invalidate cache) handled by event handlers — NOT inside the original command handler.'},
+    {t:'practical',c:'Implement: abstract DomainEvent base record. IDomainEventHandler<T> interface. ProductCreatedEventHandler logs creation. MediatRDomainEventDispatcher converts domain events to MediatR notifications. Entity base class with AddDomainEvent() and GetDomainEvents(). Product constructor raises event. UnitOfWork.SaveChangesAsync dispatches all events.'},
+    {t:'goal',c:'Domain events dispatched automatically on save. ProductCreatedEventHandler logs creation. Push.'}
+  ]),
+  makeDay(17,'Decorator Pattern: Caching + Logging Repository',[
+    {t:'theory',c:'Decorator Pattern — wraps an object to add behaviour without modifying it. Implement same interface as wrapped object, accept original in constructor, add behaviour before/after delegating.'},
+    {t:'practical',c:'Build: (1) LoggingProductRepository: logs every method call with parameters and execution time (Stopwatch). (2) CachingProductRepository: uses IMemoryCache, caches GetByIdAsync with 5-min expiry, invalidates on Update/Delete. Register via decorator pattern in DI. Test: GET product twice — second call from cache.'},
+    {t:'note',c:'Interview line: "I used the Decorator pattern to add caching to the repository without modifying the repository itself. This kept the caching concern separate and testable in isolation."'},
+    {t:'goal',c:'Caching and logging decorators working. Second call shows "cache hit". Push.'}
+  ]),
+  makeDay(18,'Factory + Builder Pattern: Domain Object Creation',[
+    {t:'practical',c:'Build: (1) ProductFactory.cs: Create() validates all inputs, creates valid Product, raises domain event. No more calling new Product() directly from handlers. (2) OrderBuilder.cs: fluent builder — WithProduct(), WithShippingAddress(), WithPricingStrategy(), Build() validates all required fields. (3) Update CreateProductCommand handler to use ProductFactory.'},
+    {t:'goal',c:'ProductFactory + OrderBuilder working. 4 factory unit tests. Push.'}
+  ]),
+  makeDay(19,'CQRS Deep Dive: Read Model vs Write Model',[
+    {t:'theory',c:'Simple CQRS (same model, different handlers — what you have) vs Full CQRS (separate read/write stores). Simple CQRS is what most companies mean. Full CQRS + Event Sourcing is overkill for 90% of systems.'},
+    {t:'practical',c:'Implement read model projections: (1) ProductListItemDto — lightweight (Id, Name, Price, CategoryName, StockStatus) for list views. (2) ProductDetailDto — full data for detail view. Two different handlers returning different projections.'},
+    {t:'goal',c:'Two different DTOs for list vs detail. API returns correct DTO per endpoint. Push.'}
+  ]),
+  makeDay(20,'Saturday: Order Feature + Cross-Feature Integration',[
+    {t:'practical',c:'3 hours: Build Order feature: Domain (Order, OrderItem, OrderStatus), Application (PlaceOrderCommand, GetOrderByIdQuery), API (OrdersController). PlaceOrder: validate products exist + have stock, create Order, decrease stock, save, dispatch OrderPlacedEvent. Test: place order, verify stock decremented.'},
+    {t:'goal',c:'Orders working. PlaceOrder decrements stock. OrderPlacedEvent fired. 5+ tests. Push.'}
+  ]),
+  makeDay(21,'Sunday: Week 3 Review + LeetCode',[
+    {t:'theory',c:'Review design patterns: Strategy→PricingRules, Observer→DomainEvents, Decorator→CachingRepository, Factory→ProductFactory, Builder→OrderBuilder. Can you explain each in ONE sentence and point to it in your code?'},
+    {t:'practical',c:'LeetCode #53 Maximum Subarray (Kadane\'s algorithm). LeetCode #238 Product of Array Except Self. 45 min max. Rest.'}
+  ]),
+  weekHeader(4,'PostgreSQL + EF Core + Real Database Layer','Phase 1 · Days 22–28','#1D4ED8'),
+  makeDay(22,'PostgreSQL Schema Design from Requirements',[
+    {t:'theory',c:'Normalisation: 1NF (atomic values), 2NF (no partial FK dependency), 3NF (no transitive dependency). Indexes: every FK column, every column frequently in WHERE or ORDER BY.'},
+    {t:'practical',c:'Design schema on paper first: Products (id UUID PK, name, description, price DECIMAL CHECK>0, stock_quantity INT CHECK>=0, category_id FK, is_deleted, created_at, updated_at). Categories (id, name, description, parent_id self-ref). Orders, OrderItems. Write CREATE TABLE scripts. Run in psql.'},
+    {t:'note',c:'Design the schema BEFORE touching EF Core. Schema-first thinking separates strong developers from ORM-dependent developers.'},
+    {t:'goal',c:'Schema diagram on paper. SQL scripts run successfully. Push SQL to /database/schema.sql.'}
+  ]),
+  makeDay(23,'EF Core: DbContext + Entity Configuration + Migrations',[
+    {t:'theory',c:'Fluent API over Data Annotations in Clean Architecture — Data Annotations would add EF Core dependency to Domain layer, violating Clean Architecture. IEntityTypeConfiguration<T> — separate config class per entity. Owned entities for Value Objects.'},
+    {t:'practical',c:'dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL. (1) Create ApplicationDbContext. (2) ProductConfiguration: ToTable, HasKey, Property constraints, OwnsOne for Money (maps to price + currency columns), HasQueryFilter(p=>!p.IsDeleted) — global soft-delete filter, HasIndex. (3) Create migration: dotnet ef migrations add InitialCreate.'},
+    {t:'code',c:'builder.HasQueryFilter(p => !p.IsDeleted);\nbuilder.OwnsOne(p => p.Price, money => { money.Property(m => m.Amount).HasColumnName("price").HasPrecision(10,2).IsRequired(); money.Property(m => m.Currency).HasColumnName("currency").HasMaxLength(3); });'},
+    {t:'goal',c:'Migration generated. dotnet ef database update creates tables. Schema matches design. Push.'}
+  ]),
+  makeDay(24,'EF Core: Repository Implementation + Unit of Work',[
+    {t:'practical',c:'Build EfProductRepository: GetByIdAsync uses FindAsync (fastest). GetPagedAsync: Where filters + OrderBy + Skip/Take + CountAsync. DeleteAsync: soft delete (set IsDeleted=true). UnitOfWork: holds all repositories + DbContext. SaveChangesAsync delegates to context. Register all as Scoped. Remove InMemoryProductRepository from DI.'},
+    {t:'goal',c:'All CRUD operations working against PostgreSQL. GET returns data from DB. POST creates in DB. Push.'}
+  ]),
+  makeDay(25,'SQL Query Optimisation + Raw Queries with Dapper',[
+    {t:'theory',c:'N+1 problem — EF loads 100 products, then 100 separate queries for categories. Fix: .Include(p=>p.Category). Dapper for complex read queries: when EF generates slow SQL, write it yourself.'},
+    {t:'practical',c:'(1) Configure EF logging, find N+1 in GetAllProducts, fix with .Include(). (2) dotnet add package Dapper. GetTopProductsReport: raw SQL JOIN across products+categories+orderitems — top 10 by revenue. (3) Add composite index via migration. Run EXPLAIN ANALYZE — verify index scan.'},
+    {t:'code',c:'var sql = @"SELECT p.id, p.name, c.name as category_name, SUM(oi.quantity * oi.unit_price) as total_revenue FROM products p JOIN categories c ON p.category_id = c.id JOIN order_items oi ON p.id = oi.product_id WHERE p.is_deleted = false GROUP BY p.id, p.name, c.name ORDER BY total_revenue DESC LIMIT 10";\nreturn await _connection.QueryAsync<TopProductReportDto>(sql);'},
+    {t:'goal',c:'N+1 fixed and verified. Dapper report query running. EXPLAIN ANALYZE shows index scan. Push.'}
+  ]),
+  makeDay(26,'EF Core: Transactions + Concurrency + Seeding',[
+    {t:'practical',c:'(1) Add explicit transaction to PlaceOrder: if any stock update fails → rollback. (2) Add RowVersion concurrency token to Product — catch DbUpdateConcurrencyException on conflict. (3) Seed data via HasData migration: 3 categories + 5 products.'},
+    {t:'goal',c:'Transaction test: ordering more than stock fails completely. Concurrency test: second save caught. Seed data populates on migration. Push.'}
+  ]),
+  makeDay(27,'Saturday: Phase 1 Integration Tests + Swagger Polish',[
+    {t:'theory',c:'Integration tests vs unit tests. Integration: test multiple components together (controller→handler→repository→DB). WebApplicationFactory<Program> creates test server. Testcontainers spins up real PostgreSQL in Docker.'},
+    {t:'practical',c:'3 hours: (1) Add IntegrationTests project with Testcontainers.PostgreSql. (2) Tests: POST product→201 in DB, GET products→seeded data, PUT product→updated in DB, GET after DELETE→404. (3) Polish Swagger: [ProducesResponseType] on all actions, XML comments, JWT security definition. (4) Verify full E2E flow.'},
+    {t:'goal',c:'4 integration tests passing against real PostgreSQL. Swagger shows response types. Push.'}
+  ]),
+  makeDay(28,'Sunday: Phase 1 Review + Architecture Document',[
+    {t:'practical',c:'Write 4 ADRs: ADR-001-clean-architecture, ADR-002-cqrs-mediatr, ADR-003-result-pattern, ADR-004-soft-delete. LeetCode #141 Linked List Cycle. Update README with architecture diagram. Push.'},
+    {t:'goal',c:'Phase 1 complete: 4 layers, 2 features, CQRS, validation pipeline, Result pattern, domain events, design patterns, EF Core+PostgreSQL, unit+integration tests, Swagger, ADRs. Portfolio-grade codebase.'}
+  ])
+];
+
+const P2=[
+  weekHeader(5,'Docker: Containerise Your Application','Phase 2 · Days 29–35','#0D9488'),
+  makeDay(29,'Docker Fundamentals: Images, Containers, Architecture',[
+    {t:'theory',c:'Docker solves "it works on my machine." Image = read-only template with application + dependencies, built in layers. Container = running instance of an image. Data not in a volume disappears when container stops.'},
+    {t:'practical',c:'Install Docker Desktop. Run: docker run hello-world, docker run -it ubuntu bash, docker ps -a, docker run -d -p 8080:80 nginx, curl localhost:8080, docker logs <id>, docker inspect <image-id>. Understand what each command does.'},
+    {t:'goal',c:'Can run, stop, inspect, and remove containers. Know the difference between image and container. Push notes to /docs/docker-learnings.md.'}
+  ]),
+  makeDay(30,'Dockerfile: Multi-Stage Build for Your .NET API',[
+    {t:'theory',c:'Multi-stage builds: SDK image (~700MB) for building, Runtime image (~200MB) for running. Layer caching: COPY *.csproj before COPY . so NuGet restore is cached until .csproj changes.'},
+    {t:'practical',c:'Write Dockerfile: Stage 1 (sdk:8.0 AS build): WORKDIR /src, COPY .csproj files, dotnet restore, COPY . ., dotnet publish -o /app/publish. Stage 2 (aspnet:8.0 AS runtime): WORKDIR /app, COPY --from=build, EXPOSE 8080, ENTRYPOINT. Add .dockerignore: bin/, obj/, .git/. Build and run.'},
+    {t:'goal',c:'docker build and docker run succeed. API responds on localhost:5000. Image size < 250 MB. Push Dockerfile + .dockerignore.'}
+  ]),
+  makeDay(31,'Docker Compose: API + PostgreSQL + Volumes + Networks',[
+    {t:'theory',c:'Docker Compose defines multi-container applications. Containers find each other by service name (DNS). Named volumes survive container restart. depends_on with healthcheck condition for proper startup order.'},
+    {t:'practical',c:'Create docker-compose.yml: api service (build from Dockerfile, ports 5000:8080, depends_on postgres with condition service_healthy). postgres service (postgres:16-alpine, healthcheck: pg_isready, named volume pgdata). pgadmin service. All on app-net network. docker compose up -d. API runs migrations on startup via MigrateAsync() in Program.cs.'},
+    {t:'code',c:'healthcheck:\n  test: ["CMD-SHELL","pg_isready -U postgres"]\n  interval: 10s\n  timeout: 5s\n  retries: 5\ndepends_on:\n  postgres:\n    condition: service_healthy'},
+    {t:'goal',c:'docker compose up -d starts everything. API creates schema. POST product works. Push docker-compose.yml (.env in .gitignore).'}
+  ]),
+  makeDay(32,'Docker: Environment Variables + Secrets + Profiles',[
+    {t:'warning',c:'Verify .env is in .gitignore before pushing. Run: git status | grep .env — should show nothing. If you accidentally committed a secret: rotate it immediately, then remove from git history using BFG Repo Cleaner.'},
+    {t:'practical',c:'(1) Create .env.example (commit this) with placeholder values. Create .env (DO NOT commit) with real dev values. Update docker-compose to use env_file: .env. (2) Add Compose profiles: pgadmin tagged profiles: [dev]. docker compose --profile dev up starts everything. (3) Remove all hardcoded connection strings from appsettings.json.'},
+    {t:'goal',c:'.env.example committed. .env in .gitignore. All secrets via env vars. Profiles working. Push.'}
+  ]),
+  makeDay(33,'Docker: Optimization + Non-Root User + Health Endpoints',[
+    {t:'practical',c:'(1) Add non-root user to Dockerfile: RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser. USER appuser. (2) Add HEALTHCHECK: CMD curl --fail http://localhost:8080/health/live || exit 1. (3) In API: AddHealthChecks().AddNpgSql(connectionString). Map /health/live (always Healthy) and /health/ready (checks DB+Redis+RabbitMQ).'},
+    {t:'goal',c:'Non-root user in container. /health/live returns 200. /health/ready checks DB. HEALTHCHECK in Dockerfile. Push.'}
+  ]),
+  makeDay(34,'Saturday: Docker Compose Full Stack + Makefile',[
+    {t:'practical',c:'3 hours: Create Makefile with targets: build, up (--profile dev), down, logs, clean (down -v), test, migrate. Verify make up starts everything and make down stops cleanly. Add database seeder hosted service. E2E test: make up → seed → POST product → GET returns it → make down → make up → data persists.'},
+    {t:'goal',c:'Makefile working. make up starts full stack. Data persists across restarts. Push.'}
+  ]),
+  makeDay(35,'Sunday: Week 5 Review + LeetCode',[
+    {t:'theory',c:'Review Docker: (1) Why multi-stage builds? (2) CMD vs ENTRYPOINT? (3) Why non-root user? (4) How does service DNS work in Compose? (5) Named volume vs bind mount?'},
+    {t:'practical',c:'LeetCode #206 Reverse Linked List (from memory). LeetCode #21 Merge Two Sorted Lists. 30 min. Rest.'}
+  ]),
+  weekHeader(6,'Redis: Distributed Caching from Scratch','Phase 2 · Days 36–42','#0D9488'),
+  makeDay(36,'Redis Fundamentals: Data Structures + CLI',[
+    {t:'theory',c:'Redis data structures: STRING, LIST, HASH, SET, SORTED SET, STREAM. TTL: every key can have expiry. Eviction policies: noeviction, allkeys-lru, volatile-lru.'},
+    {t:'practical',c:'Add Redis to docker-compose. Connect via CLI: docker compose exec redis redis-cli. Run: SET product:1 "laptop" EX 300, GET product:1, TTL product:1, INCR counter, HSET session:abc user_id 123, HGETALL session:abc, ZADD leaderboard 100 "Alice" 200 "Bob", ZREVRANGE leaderboard 0 -1 WITHSCORES.'},
+    {t:'goal',c:'Redis running in compose. Can perform basic operations via CLI. Push docker-compose with Redis service.'}
+  ]),
+  makeDay(37,'Redis in .NET: StackExchange.Redis + Cache-Aside Pattern',[
+    {t:'theory',c:'Cache-aside (lazy loading): (1) Check cache. (2) Hit → return. (3) Miss → fetch from DB. (4) Write to cache with TTL. (5) Return. Cache stampede: multiple simultaneous misses all hit DB. Prevention: Redis SET NX as lock while one request rebuilds.'},
+    {t:'practical',c:'dotnet add package StackExchange.Redis. (1) Create ICacheService with GetAsync, SetAsync, RemoveAsync, RemoveByPatternAsync. (2) Implement RedisCacheService using IDistributedCache with System.Text.Json serialization. (3) Add caching to GetProductByIdQueryHandler: try cache with key "products:{id}", on miss fetch from DB and cache for 10 minutes.'},
+    {t:'code',c:'var cached = await _cache.GetAsync<ProductDto>($"products:{req.Id}", ct);\nif (cached != null) return cached;\nvar product = await _uow.Products.GetByIdAsync(req.Id, ct);\nif (product == null) return null;\nvar dto = product.ToDto();\nawait _cache.SetAsync($"products:{req.Id}", dto, TimeSpan.FromMinutes(10), ct);\nreturn dto;'},
+    {t:'goal',c:'GetProductById returns from cache on second call. Verify with Redis CLI. Push.'}
+  ]),
+  makeDay(38,'Redis: Cache Invalidation on Write Operations',[
+    {t:'theory',c:'"There are only two hard things in Computer Science: cache invalidation and naming things." Delete on write is the correct default: simplest, consistent, slight delay on next read (cache miss rebuilds).'},
+    {t:'practical',c:'(1) In UpdateProductCommandHandler: after DB update, RemoveAsync("products:{id}") + RemoveByPatternAsync("products:list:*"). (2) Same in DeleteProductCommandHandler. (3) Add CacheInvalidationBehaviour — MediatR post-processor that removes cache for commands implementing ICacheInvalidatingCommand marker interface.'},
+    {t:'goal',c:'Update/Delete clears cache. Verify: GET (caches), PUT, GET again (fresh from DB). Push.'}
+  ]),
+  makeDay(39,'Redis: Session, Rate Limiting + Sorted Sets',[
+    {t:'practical',c:'(1) Build RateLimitingMiddleware: key = "ratelimit:{userId}:{minute}". Use StackExchange IDatabase for atomic INCR. If count > 60: return 429 with Retry-After header. (2) Add recently viewed: ZADD recently_viewed:global {timestamp} {productId} on each GET. Limit to 50. Add GET /api/v1/products/recently-viewed endpoint.'},
+    {t:'goal',c:'Rate limiter returns 429 after 60 req/min. Recently viewed endpoint works. Push.'}
+  ]),
+  makeDay(40,'Redis: Distributed Lock + Cache Stampede Prevention',[
+    {t:'theory',c:'Distributed lock: SET key token NX PX milliseconds — atomic, set only if not exists (NX). Returns OK if acquired, nil if not. Prevents multiple concurrent cache misses all hitting DB.'},
+    {t:'practical',c:'Implement GetOrSetAsync in RedisCacheService: cache hit → return. Acquire lock (SET "lock:{key}" token NX PX 5000). With lock: check cache again (double-check). On miss: call factory function. SET in cache. Release lock with Lua script for atomicity. Test: 10 concurrent requests on cache miss → only 1 DB query.'},
+    {t:'goal',c:'GetOrSetAsync with distributed lock. Concurrent misses result in only 1 DB query. Push.'}
+  ]),
+  makeDay(41,'Saturday: Redis Monitoring + Full Caching Coverage',[
+    {t:'practical',c:'3 hours: (1) Add caching to GetAllProducts (5-min TTL) and GetAllCategories (30-min TTL). (2) Add CacheMetricsMiddleware: tracks hits vs misses, exposes GET /api/v1/metrics/cache. (3) Run 100 requests — verify 80%+ hit ratio. (4) docker compose exec redis redis-cli INFO stats | grep keyspace.'},
+    {t:'goal',c:'List and detail endpoints cached. Cache metrics endpoint. 80%+ hit ratio. Push.'}
+  ]),
+  makeDay(42,'Sunday: Week 6 Review + LeetCode',[
+    {t:'note',c:'Answer to "What if Redis is down?": Yes — your API must work when Redis is down. Catch RedisConnectionException in the cache service and fall through to DB. Graceful degradation.'},
+    {t:'practical',c:'LeetCode #15 3Sum (sort + two pointers). LeetCode #11 Container With Most Water. 45 min. Rest.'}
+  ]),
+  weekHeader(7,'RabbitMQ: Async Messaging + Event-Driven Architecture','Phase 2 · Days 43–49','#0D9488'),
+  makeDay(43,'RabbitMQ Fundamentals: Exchanges, Queues, Bindings',[
+    {t:'theory',c:'Producers publish to Exchanges. Exchanges route to Queues via Bindings. Consumers subscribe to Queues. Exchange types: Direct (exact routing key), Fanout (broadcast), Topic (wildcards), Headers. Manual ack: consumer sends ack after success — message removed from queue.'},
+    {t:'practical',c:'Add rabbitmq:3-management to docker-compose. Open http://localhost:15672. Create Topic exchange "domain-events". Create queues "order-events" and "product-events". Create bindings: "domain-events"→"order-events" (routing key: "order.#"). Publish test message — verify routing.'},
+    {t:'goal',c:'RabbitMQ in compose. Exchanges, queues, bindings created. Message routing verified. Push.'}
+  ]),
+  makeDay(44,'RabbitMQ in .NET: Publisher Service',[
+    {t:'practical',c:'dotnet add package RabbitMQ.Client. (1) Create IMessagePublisher interface. (2) Implement RabbitMqMessagePublisher: Channel.BasicPublish with persistent=true, contentType="application/json", messageId=Guid.NewGuid(). (3) Create OrderPlacedIntegrationEvent with MessageId, OccurredAt, OrderId, UserId, Items, TotalAmount. (4) In PlaceOrderCommandHandler: publish after saving.'},
+    {t:'goal',c:'Place order → integration event visible in RabbitMQ management UI. Push.'}
+  ]),
+  makeDay(45,'RabbitMQ: Consumer Service with BackgroundService',[
+    {t:'theory',c:'BasicQos(prefetchCount: 1) — consumer only receives one message at a time (fair dispatch). BasicConsume with autoAck: false — consumer controls when to ack.'},
+    {t:'practical',c:'Create OrderPlacedConsumer: BackgroundService, creates channel, sets BasicQos, declares queue, creates EventingBasicConsumer. In Received handler: deserialise, log "Notification: Order {orderId} placed", BasicAck if success, BasicNack if exception (requeue:false — goes to DLQ). Register as hosted service.'},
+    {t:'code',c:'async void OnMessageReceived(object sender, BasicDeliverEventArgs ea) { try { var body = Encoding.UTF8.GetString(ea.Body.ToArray()); var evt = JsonSerializer.Deserialize<OrderPlacedIntegrationEvent>(body); _logger.LogInformation("Processing order {OrderId}", evt.OrderId); channel.BasicAck(ea.DeliveryTag, false); } catch (Exception ex) { _logger.LogError(ex, "Failed"); channel.BasicNack(ea.DeliveryTag, false, false); } }'},
+    {t:'goal',c:'Place order → consumer logs notification. Message disappears from queue after ack. Push.'}
+  ]),
+  makeDay(46,'RabbitMQ: Dead Letter Queue + Retry Logic',[
+    {t:'theory',c:'Dead Letter Exchange (DLX): when message is NACKed without requeue, goes to DLX → DLQ. Use for: failed messages needing investigation, retry with delay, alerting (monitor DLQ size — if > 0, something is failing).'},
+    {t:'practical',c:'(1) Declare DLX + DLQ. Declare "order-events" with x-dead-letter-exchange=domain-events.dlx. (2) Retry: check header "x-retry-count". If < 3: increment + re-publish + BasicAck. If >= 3: BasicNack (→DLQ) + alert log. (3) DlqMonitoringService: BackgroundService checks DLQ size every 5 min, logs warning if > 0.'},
+    {t:'goal',c:'DLQ configured. Failed messages retry 3 times then go to DLQ. DLQ monitor logs warning. Push.'}
+  ]),
+  makeDay(47,'RabbitMQ: Outbox Pattern for Guaranteed Publishing',[
+    {t:'theory',c:'Without Outbox: save to DB, then publish. If app crashes between DB commit and publish, event is lost. Outbox Pattern: write event to outbox table IN THE SAME TRANSACTION. Background worker polls and publishes. Guarantees at-least-once delivery.'},
+    {t:'practical',c:'(1) Add OutboxMessage table: Id, Type, Payload (jsonb), CreatedAt, ProcessedAt?, RetryCount. (2) In UnitOfWork.SaveChangesAsync: for each domain event, create OutboxMessage and save (same transaction). (3) Create OutboxProcessorService: runs every 5s, publishes unprocessed messages, updates ProcessedAt. (4) Test: stop RabbitMQ, place order, start RabbitMQ — message published from Outbox.'},
+    {t:'goal',c:'Outbox pattern working. Message reliably published even after app restart. Push.'}
+  ]),
+  makeDay(48,'Saturday: Full Messaging Flow + Idempotent Consumer',[
+    {t:'theory',c:'Idempotent consumers: process same message twice without side effects. How: store processed MessageIds in Redis with TTL. Before processing: check if MessageId in cache. If yes: skip. If no: process + add to cache.'},
+    {t:'practical',c:'3 hours: (1) Add idempotency to OrderPlacedConsumer: check Redis for MessageId before processing. (2) Add ProductStockLowConsumer: consumes "product.stock.low" event (published when stock < 5 after sale), logs "Alert: Product {name} has only {qty} left — reorder required." (3) Test full flow: place order → Outbox publishes → OrderPlacedConsumer logs → stock < 5 → stock.low published → StockLowConsumer logs alert.'},
+    {t:'goal',c:'Full async event flow end-to-end. Idempotent consumer. Two consumers. Push.'}
+  ]),
+  makeDay(49,'Sunday: Week 7 Review + LeetCode',[
+    {t:'theory',c:'Review: (1) Exchange types and when to use each. (2) Why manual ack? (3) What is DLQ? (4) Outbox Pattern purpose? (5) Why idempotency for message consumers?'},
+    {t:'practical',c:'LeetCode #102 Binary Tree Level Order Traversal (BFS). LeetCode #200 Number of Islands (DFS on grid). 45 min. Rest.'}
+  ]),
+  weekHeader(8,'Split Into Microservices — Bounded Contexts in Practice','Phase 2 · Days 50–56','#0D9488'),
+  makeDay(50,'Service Decomposition: Identify Boundaries',[
+    {t:'theory',c:'How to identify microservice boundaries: Rule 1: split by business capability, not technical layer. Rule 2: each service owns its data (no shared databases). Rule 3: communicate via API (sync) or events (async). Rule 4: start coarse-grained, split later.'},
+    {t:'practical',c:'Design the split: ProductCatalog service (products + categories, REST API, publishes product.created/updated/deleted). OrderManagement service (orders + order_items, REST API, consumes product events, publishes order.placed/cancelled). OrderManagement validates products via REST API call to ProductCatalog (sync), OR via local product cache updated by events (async — preferred). Push to /docs/microservices-design.md.'},
+    {t:'goal',c:'Architecture diagram: 2 services, data ownership, communication patterns. Push.'}
+  ]),
+  makeDay(51,'Extract OrderManagement as a Separate Service',[
+    {t:'practical',c:'Create new solution /services/OrderManagement: same 4-layer Clean Architecture. Domain: Order, OrderItem. Application: PlaceOrderCommand (validates via IProductCatalogClient HTTP call). Infrastructure: EfOrderRepository (its own "orderdb"). ProductCatalogHttpClient. Add to docker-compose: orderapi + orderdb. Both on app-net.'},
+    {t:'goal',c:'OrderManagement runs alongside ProductCatalog. POST /order works (calls ProductCatalog API). Push.'}
+  ]),
+  makeDay(52,'Inter-Service Communication: REST + Resilience',[
+    {t:'theory',c:'Synchronous calls introduce coupling. Solutions: Circuit breaker (fail fast when downstream is failing), local cache (order service keeps copy updated via events), async validation (accept optimistically, validate async). Circuit breaker is the minimum.'},
+    {t:'practical',c:'dotnet add package Microsoft.Extensions.Http.Polly. Configure HttpClient for ProductCatalogHttpClient: Retry (3 retries, exponential backoff), Circuit breaker (open after 5 failures in 30s), Timeout (5s). Fallback: check local product cache (ProductCacheEntry table) when circuit is open.'},
+    {t:'goal',c:'Circuit breaker working. OrderManagement falls back to local cache when ProductCatalog is down. Push.'}
+  ]),
+  makeDay(53,'Event-Driven Sync: Product Cache in OrderManagement',[
+    {t:'practical',c:'(1) ProductCatalog publishes product.created + product.updated events (Outbox). (2) OrderManagement: add ProductCacheEntry table. Add ProductSyncConsumer: consumes events, upserts into ProductCacheEntry. (3) PlaceOrderCommand: validate against ProductCacheEntry (no sync call in happy path). Test: create product → event → cache updated → order uses cache.'},
+    {t:'goal',c:'OrderManagement has local product cache. Orders validated against cache. Push.'}
+  ]),
+  makeDay(54,'Docker Compose: Full Stack Orchestration',[
+    {t:'practical',c:'Update root docker-compose.yml: productapi + productdb, orderapi + orderdb, Redis (shared), RabbitMQ (shared), nginx (API Gateway routing /api/products/*→productapi, /api/orders/*→orderapi). Correct startup order with healthchecks. Update Makefile.'},
+    {t:'goal',c:'docker compose up starts all 7 services. Place order via nginx at localhost:80/api/orders works end-to-end. Push.'}
+  ]),
+  makeDay(55,'Saturday: Phase 2 Integration Tests + Documentation',[
+    {t:'practical',c:'3 hours: (1) OrderManagement integration tests: PlaceOrder, CancelOrder, ProductSyncConsumer (publish event → verify ProductCacheEntry created). (2) Write ARCHITECTURE.md: system diagram, service responsibilities, communication patterns, data ownership, tech choices. (3) Update README: make up command, API endpoint table. (4) Record 2-min Loom video walking through compose-up and placing an order.'},
+    {t:'goal',c:'Integration tests for both services. Architecture documentation. Loom video. Push.'}
+  ]),
+  makeDay(56,'Sunday: Phase 2 Review + LeetCode',[
+    {t:'theory',c:'Review: (1) Cache-aside steps? (2) Outbox Pattern? (3) Prevent message loss with RabbitMQ? (4) What is a DLQ? (5) Circuit breaker states? (6) Why each microservice has own database? (7) What is eventual consistency?'},
+    {t:'goal',c:'Phase 2 complete: 2 microservices, Redis cache, RabbitMQ events, DLQ, Outbox, circuit breaker, 7-service docker-compose. Production-like infrastructure.'}
+  ])
+];
+
+const P3=[
+  weekHeader(9,'GitHub Actions: CI/CD Pipeline','Phase 3 · Days 57–63','#7C3AED'),
+  makeDay(57,'GitHub Actions: Workflows, Triggers, Jobs, Steps',[
+    {t:'theory',c:'Workflow: YAML in .github/workflows/. Jobs run on ubuntu-latest runners. Steps use marketplace actions. Secrets: stored in GitHub Settings, injected as env vars. Contexts: ${{ github.sha }}, ${{ secrets.MY_SECRET }}.'},
+    {t:'practical',c:'Create .github/workflows/ci.yml: triggers on push (main,develop) + pull_request. Steps: checkout, setup-dotnet, cache NuGet (key: hashFiles("**/*.csproj")), dotnet restore, dotnet build --no-restore, dotnet test --logger "trx", publish test results. Add branch protection: CI must pass before merging.'},
+    {t:'code',c:'- uses: actions/cache@v4\n  with:\n    path: ~/.nuget/packages\n    key: ${{ runner.os }}-nuget-${{ hashFiles("**/*.csproj") }}\n    restore-keys: |\n      ${{ runner.os }}-nuget-'},
+    {t:'goal',c:'CI pipeline runs on every push/PR. Test results visible in GitHub. Branch protection enforced. Push.'}
+  ]),
+  makeDay(58,'GitHub Actions: Docker Build + ECR Push',[
+    {t:'theory',c:'GitHub OIDC — GitHub generates short-lived token for each workflow run. AWS IAM verifies it and issues temporary credentials. No long-lived AWS access keys needed. Tag strategy: always push :latest AND :{git-sha} (enables rollback).'},
+    {t:'practical',c:'(1) Set up GitHub OIDC with AWS IAM role ("github-actions-role"). (2) Create ECR repositories: productcatalog-api, ordermanagement-api. (3) Add build-and-push job: configure-aws-credentials (OIDC), ECR login, docker build + tag (:latest and :${{ github.sha }}), docker push both tags.'},
+    {t:'goal',c:'Push to main → Docker images in ECR with both tags. No AWS access keys in GitHub secrets. Push.'}
+  ]),
+  makeDay(59,'GitHub Actions: Code Coverage + Quality Gates',[
+    {t:'practical',c:'(1) Update test step: --collect:"XPlat Code Coverage". (2) Generate report with reportgenerator. (3) Add codecov/codecov-action@v4 (get CODECOV_TOKEN). Add coverage badge to README. (4) Fail CI if coverage < 65%. (5) Add weekly scheduled job: dotnet list package --vulnerable --include-transitive.'},
+    {t:'goal',c:'Coverage report generated. Codecov badge in README. CI fails if coverage drops. Push.'}
+  ]),
+  makeDay(60,'GitHub Actions: Environment Secrets + CD Pipeline Skeleton',[
+    {t:'practical',c:'(1) Create GitHub Environments: "staging" (no rules) + "production" (require 1 reviewer). (2) Add environment secrets to "staging": AWS_REGION, ECR_REGISTRY, EC2_HOST. (3) Skeleton cd.yml: triggered after CI passes. Job deploy-to-staging (environment: staging): placeholder "echo Deploying..." — fill in Week 10.'},
+    {t:'goal',c:'CD workflow skeleton exists. GitHub Environments with protection rules configured. Push.'}
+  ]),
+  makeDay(61,'GitHub Actions: PR Automation + Notifications',[
+    {t:'practical',c:'(1) PR labeler: actions/labeler@v5. Label "database" when Infrastructure files change, "api" when API files change. (2) PR size labeler. (3) Issue templates: bug-report.md + feature-request.md. (4) PR template: .github/PULL_REQUEST_TEMPLATE.md with checklist.'},
+    {t:'goal',c:'PR automation working. PR template in place. Labels applied automatically. Push.'}
+  ]),
+  makeDay(62,'Saturday: Complete CI/CD Pipeline Documentation',[
+    {t:'practical',c:'3 hours: (1) Write /docs/ci-cd-guide.md: diagram of complete pipeline. (2) Add pipeline summary: step summary on every run with commit SHA, test results, coverage %, image tag, deployment status. (3) Add Slack notification on failure via webhook secret. (4) Test complete flow.'},
+    {t:'goal',c:'Pipeline documentation complete. Step summary on every run. Failure notification working. Push.'}
+  ]),
+  makeDay(63,'Sunday: Week 9 Review + LeetCode',[
+    {t:'theory',c:'Review: (1) OIDC vs storing AWS access keys? (2) What is branch protection? (3) What is a quality gate? (4) Difference between CI and CD? (5) If CI fails can PR still be merged?'},
+    {t:'practical',c:'LeetCode #300 Longest Increasing Subsequence (O(n²) DP, then O(n log n)). LeetCode #739 Daily Temperatures (monotonic stack). 45 min. Rest.'}
+  ]),
+  weekHeader(10,'AWS Core: VPC + EC2 + RDS + S3 + IAM','Phase 3 · Days 64–70','#7C3AED'),
+  makeDay(64,'AWS Account Setup + IAM + VPC Design',[
+    {t:'theory',c:'IAM Principle of Least Privilege: grant only required permissions. Never use root for daily work. Never use long-lived access keys on EC2 — use IAM Instance Profiles. VPC: Public subnet (has IGW route), Private subnet (no IGW — DB goes here). Security Groups: stateful firewall.'},
+    {t:'practical',c:'(1) Create AWS free tier account. IAM admin user. Enable MFA on root. Set billing alert at $5. Install AWS CLI. (2) Design VPC on paper: CIDR 10.0.0.0/16, 2 public subnets (different AZs), 2 private subnets, IGW, route tables. (3) Create via CLI or Console.'},
+    {t:'goal',c:'IAM user, MFA, billing alert. VPC with 4 subnets. Push /docs/aws-architecture.md.'}
+  ]),
+  makeDay(65,'EC2: Launch + SSH + Install Docker + Deploy Manually',[
+    {t:'practical',c:'(1) Launch EC2: t3.micro, Ubuntu 22.04, public subnet, ED25519 key pair. Security group: SSH from YOUR IP only, HTTP/HTTPS from 0.0.0.0/0. (2) Elastic IP: allocate + associate. (3) SSH in, install Docker. (4) git clone repo, create .env, docker compose up -d. (5) Test: curl http://<elastic-ip>/api/products.'},
+    {t:'goal',c:'API running on EC2. Accessible via public IP. Push IP to docs.'}
+  ]),
+  makeDay(66,'RDS: Managed PostgreSQL in Private Subnet',[
+    {t:'theory',c:'RDS pros: automated backups (35-day point-in-time recovery), automated patching, Multi-AZ failover. Security: RDS in PRIVATE subnet, security group allows 5432 only from EC2 security group — never from 0.0.0.0/0.'},
+    {t:'practical',c:'(1) Create RDS subnet group (private subnets in different AZs). (2) Create RDS PostgreSQL: db.t3.micro, Multi-AZ: No, Public access: No. SG allows 5432 from ec2-sg only. (3) Test from EC2: psql -h <rds-endpoint>. (4) Update docker-compose on EC2: point to RDS endpoint, remove postgres service. Run migrations.'},
+    {t:'goal',c:'API reads/writes from RDS in private subnet. Direct internet connection to RDS impossible. Push updated architecture diagram.'}
+  ]),
+  makeDay(67,'S3: Product Images + IAM Instance Profile',[
+    {t:'theory',c:'IAM Instance Profile: attach role to EC2 so it calls AWS services without access keys. IMDS provides temporary credentials the SDK uses automatically. Presigned URLs: time-limited URL for GET or PUT to specific S3 object — client uploads directly (no proxying through API).'},
+    {t:'practical',c:'(1) Create S3 bucket. Block all public access. (2) Create ec2-instance-role with S3 + Parameter Store policies. Attach to EC2. (3) Test: aws s3 ls from EC2 — works without credentials. (4) Add API endpoints: POST /api/v1/products/{id}/upload-url (presigned PUT), GET /api/v1/products/{id}/image (presigned GET). Use AWSSDK.S3 NuGet.'},
+    {t:'goal',c:'EC2 uses instance profile. Image upload/download via presigned URLs. Push.'}
+  ]),
+  makeDay(68,'AWS Parameter Store: Secrets Management',[
+    {t:'theory',c:'Secrets hierarchy (worst→best): hardcoded, .env file on server, env vars at deploy time, Parameter Store (free, audited, encrypted), Secrets Manager (auto rotation, costs money). Use Parameter Store with SecureString type (KMS-encrypted).'},
+    {t:'practical',c:'(1) Store all secrets in Parameter Store as SecureString: /productcatalog/prod/ConnectionStrings/Default, /productcatalog/prod/Redis/ConnectionString, /productcatalog/prod/RabbitMQ/ConnectionString, /productcatalog/prod/Jwt/Secret. (2) dotnet add package Microsoft.Extensions.Configuration.AWSSystemsManager. Add config.AddSystemsManager("/productcatalog/prod"). (3) Remove .env from EC2 — secrets now come from Parameter Store.'},
+    {t:'goal',c:'All secrets in Parameter Store. No .env file on EC2. API reads config via IAM role. Push.'}
+  ]),
+  makeDay(69,'Saturday: Automate Deployment via GitHub Actions',[
+    {t:'practical',c:'3 hours: Complete CD pipeline. Add deploy job: Configure AWS OIDC → SSH to EC2 (appleboy/ssh-action@v1) → On EC2: ECR login + docker compose pull + docker compose up -d --no-deps productapi (rolling update one service at a time) → health check (curl /health/ready). Test: push change → watch full pipeline → auto-deploys to EC2.'},
+    {t:'goal',c:'Push to main → auto-deploys to EC2 in < 6 minutes. Health check validates deployment. Push.'}
+  ]),
+  makeDay(70,'Sunday: Week 10 Review + LeetCode',[
+    {t:'theory',c:'Review AWS: (1) Why RDS in private subnet? (2) IAM Instance Profile vs access keys? (3) Presigned URL purpose? (4) Parameter Store vs env vars? (5) Draw VPC architecture: public vs private, what talks to what.'},
+    {t:'practical',c:'LeetCode #416 Partition Equal Subset Sum (0/1 knapsack DP). LeetCode #56 Merge Intervals (sort by start, merge). 45 min. Rest.'}
+  ]),
+  weekHeader(11,'ECS Fargate: Containers Live on the Internet','Phase 3 · Days 71–77','#7C3AED'),
+  makeDay(71,'ECS Fargate: Concepts + Task Definitions',[
+    {t:'theory',c:'ECS Fargate: AWS manages the underlying compute — serverless containers. Pay per task CPU/memory second. Task Definition: the container specification (image, CPU, memory, port mappings, env vars, log config). Service: runs N copies, registers with load balancer, replaces unhealthy tasks, rolling updates.'},
+    {t:'practical',c:'(1) Create ECS Cluster (Fargate). (2) Create Task Definition for productapi: 512 CPU, 1024 memory. Container: ECR image, portMappings 8080, awslogs log driver → /ecs/productapi. (3) Create Task Execution Role: allows ECR pull + CloudWatch writes. (4) Create CloudWatch Log Group /ecs/productapi with 30-day retention.'},
+    {t:'goal',c:'ECS cluster created. Task definition registered. Log group created.'}
+  ]),
+  makeDay(72,'ECS: Application Load Balancer + Service Creation',[
+    {t:'theory',c:'ALB: Layer 7, routes by URL path or host header. Target Groups: groups of ECS tasks. SSL termination at ALB. ECS rolling update: ALB ensures at least 1 healthy task during deployment.'},
+    {t:'practical',c:'(1) Create ALB in public subnets. (2) Create Target Group: type IP, port 8080, health check /health/live. (3) Request SSL cert in ACM. Validate via DNS. (4) ALB HTTPS listener → target group. HTTP listener → redirect to HTTPS. (5) Create ECS Service: Fargate, private subnets, register with target group. SG allows 8080 from ALB SG only.'},
+    {t:'goal',c:'ECS running 1 Fargate task. ALB health check shows healthy. Hit ALB DNS name: API responds. HTTPS working.'}
+  ]),
+  makeDay(73,'ECS: Update CD Pipeline for Fargate Deployment',[
+    {t:'practical',c:'Update cd.yml after ECR push: (1) aws ecs describe-task-definition. (2) amazon-ecs-render-task-definition (sets image to new ECR URI:git-sha). (3) amazon-ecs-deploy-task-definition (updates service, waits for stability). Same for orderapi. Test: push change → new ECS tasks start → old stop → HTTPS URL serves new version.'},
+    {t:'goal',c:'Push to main → containers auto-deploy to ECS Fargate. HTTPS URL serves latest code. Full CD pipeline. Push.'}
+  ]),
+  makeDay(74,'ECS: Auto Scaling + Cost Optimization',[
+    {t:'practical',c:'(1) Register scalable target: min 1, max 3. (2) Target tracking policy: CPU at 70%. (3) Lambda to scale down to 0 tasks at 11 PM IST + back to 1 at 8 AM IST (saves ~65% cost). (4) CloudWatch alarm: alert when task count = 0 unexpectedly.'},
+    {t:'goal',c:'Auto scaling configured. Lambda scales tasks to 0 at night. Estimated monthly cost < $5. Push.'}
+  ]),
+  makeDay(75,'HTTPS + Domain + SSL Certificate',[
+    {t:'practical',c:'(1) Verify ACM cert status: "Issued." (2) Verify HTTPS listener uses ACM cert. (3) HTTP→HTTPS redirect on ALB. (4) Test SSL: visit https://yourdomain.com/api/products. (5) Check SSL Labs rating: ssllabs.com/ssltest — aim for A. (6) Add HSTS header via UseHsts(). (7) Update README with live HTTPS URL.'},
+    {t:'goal',c:'https://yourdomain.com/api/products returns JSON. SSL Labs: A grade. HSTS header present. Push live URL to README.'}
+  ]),
+  makeDay(76,'Saturday: Phase 3 Full Documentation',[
+    {t:'practical',c:'3 hours: (1) Write /docs/deployment-guide.md: complete from-scratch instructions. (2) Write /docs/aws-cost-analysis.md. (3) Write ADRs: ADR-005-ecs-over-ec2, ADR-006-rds-over-self-managed, ADR-007-parameter-store-secrets. (4) Update README: "Live Demo" section with HTTPS URL, architecture diagram, CI badge, Loom video link.'},
+    {t:'goal',c:'Deployment guide complete. ADRs written. README has live URL and CI badge. Push.'}
+  ]),
+  makeDay(77,'Sunday: Week 11 Review + LeetCode',[
+    {t:'theory',c:'Review ECS: (1) Fargate vs EC2 launch type? (2) What is a Task Definition? (3) What is a Target Group? (4) How does rolling deployment work? (5) Why ECS tasks in private subnets and ALB in public?'},
+    {t:'practical',c:'LeetCode #295 Find Median from Data Stream (two heaps). 45 min. Rest.'}
+  ]),
+  weekHeader(12,'CloudWatch + Serilog + Monitoring + Alerting','Phase 3 · Days 78–84','#7C3AED'),
+  makeDay(78,'Serilog: Structured Logging',[
+    {t:'theory',c:'Structured logging: {"event":"OrderPlaced","userId":"123","amount":999} — queryable, consistent. Log levels: Information for normal flows, Warning for recoverable issues, Error for exceptions. Never Debug/Verbose in production.'},
+    {t:'practical',c:'dotnet add package Serilog.AspNetCore, Serilog.Sinks.Console, Serilog.Sinks.AwsCloudWatch. (1) Configure Serilog in Program.cs. (2) Add RequestLoggingMiddleware: log every request with method, path, status code, elapsed ms, userId. (3) Add correlation ID middleware: generate or read X-Correlation-ID header, add to all log entries. (4) Configure "Microsoft.EntityFrameworkCore": "Warning" to suppress EF noise.'},
+    {t:'goal',c:'All logs to Serilog. Structured JSON in CloudWatch. Correlation ID in every log entry. Push.'}
+  ]),
+  makeDay(79,'CloudWatch: Dashboards + Metric Filters',[
+    {t:'practical',c:'(1) Create Log Insights queries: error query (last 100 errors), slow request query (>500ms), orders per hour. Save as named queries. (2) Create Metric Filters: level=Error → "APIErrorCount" metric. event=OrderPlaced → "OrdersPlaced" metric. (3) Create CloudWatch Dashboard: ECS CPU+Memory, RDS CPU+Connections, ALB 5xx count, APIErrorCount, OrdersPlaced. Set 1-minute refresh.'},
+    {t:'goal',c:'CloudWatch dashboard showing live metrics. Metric filters extracting business metrics. Push dashboard config to docs.'}
+  ]),
+  makeDay(80,'CloudWatch Alarms + SNS Alerting',[
+    {t:'practical',c:'(1) Create SNS topic "productcatalog-alerts". Subscribe email. (2) Create alarms: High5xxRate (ALB 5xx > 10 in 5 min), HighCPU (ECS >80% for 10 min), RDSHighCPU (>70%), RDSLowStorage (<2GB), OrdersDropped (OrdersPlaced < 1 for 60 min during business hours). (3) Test: stop ECS briefly → alarm fires → email received.'},
+    {t:'goal',c:'5 alarms configured. SNS email subscribed. Test alarm verified. Runbook written. Push.'}
+  ]),
+  makeDay(81,'Health Checks + Readiness + Liveness Probes',[
+    {t:'practical',c:'(1) Enhance /health/ready: check DB + Redis + RabbitMQ connectivity. If any fails: return Degraded (200 but ALB can detect Degraded). (2) Configure ECS HEALTHCHECK CMD. (3) ALB health check: path /health/live, interval 30s. (4) Test: inject fake RabbitMQ failure → /health/ready returns Degraded → ALB keeps sending traffic (service still works).'},
+    {t:'goal',c:'3 health check components. ALB health check configured. Degraded state does not remove from ALB. Push.'}
+  ]),
+  makeDay(82,'Performance: X-Ray Tracing + Slow Query Analysis',[
+    {t:'practical',c:'(1) dotnet add package Amazon.XRay.Recorder.Core. app.UseXRay("ProductCatalog"). Enable X-Ray daemon sidecar in ECS task definition. (2) Add X-Ray to EF Core queries. (3) In X-Ray console: view service map, find slow traces, drill into spans. (4) Find slowest 5 requests from last 24 hours.'},
+    {t:'goal',c:'X-Ray traces visible. Service map shows ProductAPI → RDS, Redis, RabbitMQ. Push.'}
+  ]),
+  makeDay(83,'Saturday: Phase 3 Complete Review + Cost Report',[
+    {t:'practical',c:'3 hours: (1) Write /docs/sre-runbook.md: for each alarm, what it means, how to diagnose, what to do. (2) Check AWS Cost Explorer: document in /docs/aws-costs.md. (3) Full deployment test: push change → deploy to ECS → verify HTTPS → verify CloudWatch logs → verify dashboard metric. Time the pipeline: aim < 8 min. (4) Write Phase 3 retrospective.'},
+    {t:'goal',c:'Runbook complete. Cost analysis done. Full pipeline timed. Phase 3 retro written. Push.'}
+  ]),
+  makeDay(84,'Sunday: Phase 3 Review + LeetCode',[
+    {t:'theory',c:'Review: (1) Draw CI/CD pipeline on paper. (2) Draw AWS architecture (VPC, subnets, ECS, ALB, RDS, S3). (3) Why ECS Fargate instead of EC2? (4) What is X-Ray and what does a "span" represent? (5) What is a CloudWatch Metric Filter?'},
+    {t:'goal',c:'Phase 3 complete. Live HTTPS URL. Automated CI/CD. CloudWatch dashboards and alarms. Interview-ready infrastructure.'}
+  ])
+];
+
+const P4=[
+  weekHeader(13,'HLD: 3 System Design Designs Mastered','Phase 4 · Days 85–91','#7C3AED'),
+  makeDay(85,'System Design Framework + URL Shortener: Requirements + Estimation',[
+    {t:'theory',c:'45-minute framework: (1) Clarify requirements — 5 min. (2) Capacity estimation — 5 min. (3) API design — 3 min. (4) Data model — 3 min. (5) High-level design — 10 min. (6) Deep dives — 15 min. (7) Wrap-up — 4 min.'},
+    {t:'practical',c:'URL Shortener estimation: 100M URLs/day. Read:write = 10:1. Write QPS = 1,160/s. Read QPS = 11,600/s. Storage: 100M × 365 × 7 × 500 bytes ≈ 128 TB. API: POST /api/v1/urls → {shortUrl}, GET /{code} → 301/302 redirect, DELETE /api/v1/urls/{code}. DB: URLs(id BIGINT PK, long_url, short_code UNIQUE, created_at, expires_at). Index on short_code. Time yourself.'},
+    {t:'goal',c:'Requirements, estimation, API design, DB schema for URL Shortener written on paper in < 16 minutes.'}
+  ]),
+  makeDay(86,'URL Shortener: High-Level Design + Cache Strategy',[
+    {t:'practical',c:'Draw complete architecture: Client → CDN → ALB → Web Servers (stateless) → Redis Cache (LRU, 20% of daily URLs) → URL DB (primary for writes, Read Replica for reads). Separate Key Generation Service maintains counter, pre-generates short codes. 301 vs 302: 301 (browser caches — loses analytics), 302 (every request hits server — enables analytics). Practice drawing in < 10 minutes.'},
+    {t:'goal',c:'Complete architecture diagram on paper. Can explain every component and arrow.'}
+  ]),
+  makeDay(87,'URL Shortener: Deep Dives + Failure Modes',[
+    {t:'practical',c:'Write answers: (1) DB down: cached URLs still served, new shortening fails gracefully. (2) Redis down: circuit breaker, fall to DB — degraded but functional. (3) URL expiry: background job hourly, lazy deletion on redirect. (4) Abuse: rate limit per IP/auth. (5) Analytics: click events → Kafka/SQS → analytics worker → time-series table. (6) 10x scale: more web servers, Redis cluster, shard DB. Practice answering each in 60 seconds.'},
+    {t:'goal',c:'6 deep dive Q&A pairs written. Can answer each in 60 seconds out loud.'}
+  ]),
+  makeDay(88,'Notification System: Full Design',[
+    {t:'practical',c:'Draw complete Notification System: Services → Notification API → Validator + Rate Limiter → Priority Queue → Channel Workers [Push, SMS, Email] → Third-Party Providers. Side systems: User Preference Service, Device Token Registry. Deep dives: fan-out (user has 3 devices), high throughput (10M/day = 116/sec), provider failure (DLQ + retry next hour).'},
+    {t:'goal',c:'Notification System fully designed. Deep dives prepared. Can deliver in 45 minutes.'}
+  ]),
+  makeDay(89,'File Upload System: Design + CDN + Storage',[
+    {t:'practical',c:'Design: User → API (POST /api/v1/files/upload-url → {uploadUrl, fileId}) → User uploads directly to S3 → S3 Event → SQS → File Processor (thumbnail, metadata, virus scan) → DB status "ready" → CDN invalidation. DB: files(id, user_id, s3_key, size_bytes, mime_type, status, cdn_url). Deep dives: large files (S3 multipart), virus scanning (ClamAV), private files (presigned GET), deduplication (SHA256 hash).'},
+    {t:'goal',c:'File Upload System designed. Three upload patterns explained. CDN architecture included.'}
+  ]),
+  makeDay(90,'Saturday: Mock System Design Session',[
+    {t:'practical',c:'3 hours: (1) Timer 45 min: design URL Shortener from blank page, talk out loud. (2) 15-min break. (3) Timer 45 min: design Notification System from blank page. (4) 15-min break. (5) Review gaps: rate limiting forgotten? DB indexing skipped? Monitoring not mentioned? (6) Record yourself doing one design. Count "um"s. Count unlabeled boxes. Fix both.'},
+    {t:'goal',c:'Both designs in 45 min each. Recording reviewed. Top 3 weaknesses identified. Push notes.'}
+  ]),
+  makeDay(91,'Sunday: Week 13 Review',[
+    {t:'theory',c:'Review: (1) Horizontal vs vertical scaling? (2) When to use CDN? (3) What is consistent hashing? (4) SQL vs NoSQL — when to choose each? (5) Why 302 instead of 301 for analytics in URL Shortener?'},
+    {t:'practical',c:'LeetCode #238 Product of Array Except Self (should be < 5 min now). LeetCode #128 Longest Consecutive Sequence (HashSet O(n)). 30 min. Rest.'}
+  ]),
+  weekHeader(14,'LLD: Rate Limiter + Parking Lot + Task Scheduler','Phase 4 · Days 92–98','#7C3AED'),
+  makeDay(92,'LLD: Rate Limiter — Class Design + Implementation',[
+    {t:'theory',c:'Rate Limiter algorithms: Fixed Window Counter (simple, boundary burst issue), Sliding Window Log (accurate, memory-heavy), Sliding Window Counter (hybrid — best balance), Token Bucket (smooth bursts), Leaky Bucket (constant output). Implement Sliding Window Counter with Redis.'},
+    {t:'practical',c:'Design: IRateLimiter {bool IsAllowed(string key)}, SlidingWindowRateLimiter (constructor: IRedisService, int maxRequests, TimeSpan window), RateLimitConfig, RateLimiterFactory. Implement: key = "{prefix}:{identifier}:{minute}". INCR key + SET EXPIRY. Count = current + (previous × overlap fraction). Return count <= maxRequests. Test: 60 requests → allowed, 61st → denied.'},
+    {t:'goal',c:'Rate limiter class diagram. SlidingWindowRateLimiter C# implementation. Unit tests. Push to /lld/rate-limiter.'}
+  ]),
+  makeDay(93,'LLD: Parking Lot System',[
+    {t:'practical',c:'Entities: SpotType enum, VehicleType enum, Vehicle(LicensePlate, VehicleType), ParkingSpot(SpotId, Floor, SpotType, Status), Ticket(TicketId, Vehicle, SpotId, EntryTime, ExitTime?, TotalFee?). Services: IParkingLotService {ParkVehicle, ExitVehicle}, ParkingSpotAssigner (motorcycle→motorcycle spot, car→compact or large, truck→large only), FeeCalculator. Implement ParkVehicle + ExitVehicle. Patterns: Strategy for fee calculation, Observer for capacity alerts.'},
+    {t:'goal',c:'Parking lot class diagram. Core implementation. Unit tests: park car, exit car, verify fee. Push to /lld/parking-lot.'}
+  ]),
+  makeDay(94,'LLD: Task Scheduler',[
+    {t:'practical',c:'Design: IJob {Execute(JobContext)}, ITrigger {DateTime? NextFireTime(DateTime after)}, CronTrigger, IntervalTrigger, JobDefinition, Schedule(Id, JobDefinition, ITrigger, IsEnabled). Scheduler: timer loop every 5 seconds → find due schedules → acquire distributed lock per job → execute → release lock. DistributedLockService wraps Redis SETNX.'},
+    {t:'goal',c:'Task Scheduler design. Core implementation with distributed lock. Test: schedule job 5s from now, verify it fires. Push to /lld/task-scheduler.'}
+  ]),
+  makeDay(95,'Behavioral Interview Preparation',[
+    {t:'theory',c:'STAR format: Situation (1 sentence context), Task (1 sentence your role), Action (2–3 sentences of specific actions using "I"), Result (1 sentence measurable outcome). Target: 90 seconds per story.'},
+    {t:'practical',c:'Write STAR stories for 8 scenarios using real 6-year experiences: (1) Hardest technical problem. (2) Disagreement with technical decision. (3) Failure and recovery. (4) Mentoring a colleague. (5) Tight deadline. (6) Proactive improvement without being asked. (7) Conflict with team member. (8) Why leaving current role. Practice out loud. Record yourself. Push to /interview-prep/behavioral.md.'},
+    {t:'goal',c:'8 STAR stories written and practiced. Each under 90 seconds. Push.'}
+  ]),
+  makeDay(96,'.NET Deep Dive: 20 Questions Every Interviewer Asks',[
+    {t:'theory',c:'Write 3–5 sentence answers + code snippet for: (1) Transient vs Scoped vs Singleton + captive dependency. (2) ConfigureAwait(false). (3) Task vs Thread. (4) Middleware pipeline order. (5) IEnumerable vs IQueryable. (6) async void vs async Task. (7) Value types vs reference types. (8) Span<T>. (9) Boxing/unboxing. (10) LINQ deferred vs immediate. (11) IDisposable. (12) Exception handling. (13) Record types. (14) Pattern matching. (15) Nullable reference types. (16) Primary constructors (C# 12). (17) EF Core change tracking. (18) EF Core N+1. (19) IHostedService vs BackgroundService. (20) Minimal API vs Controller-based.'},
+    {t:'goal',c:'20 Q&A pairs written. Can answer each in < 90 seconds. Push to /interview-prep/dotnet-questions.md.'}
+  ]),
+  makeDay(97,'Saturday: Mock Interview Day',[
+    {t:'practical',c:'3 hours: (1) Timer 30 min: solve LeetCode #49 Group Anagrams + #153 Find Minimum in Rotated Array without notes. (2) Timer 45 min: design Ticket Booking System from scratch (not prepared). (3) Answer 5 STAR questions out loud without notes. (4) 5-min project walkthrough "walk me through your ProductCatalog project." Record this on video and watch it back.'},
+    {t:'goal',c:'All 4 mock sessions completed. Video recorded and watched. Top 3 improvements identified. Push notes.'}
+  ]),
+  makeDay(98,'Sunday: Week 14 Review',[
+    {t:'theory',c:'LLD review: (1) Patterns used in Rate Limiter? (2) Why Strategy for fee calculation in Parking Lot? (3) Why distributed lock in Task Scheduler? (4) Difference between LLD and HLD interviews?'},
+    {t:'practical',c:'LeetCode #543 Diameter of Binary Tree. LeetCode #572 Subtree of Another Tree. 30 min. Rest.'}
+  ]),
+  weekHeader(15,'Project Documentation + Polish + Swagger + Demo','Phase 4 · Days 99–105','#7C3AED'),
+  makeDay(99,'Architecture Decision Records (ADRs)',[
+    {t:'theory',c:'ADRs capture WHAT was decided, WHY, and the consequences. Format: Title, Status, Context, Decision, Consequences. ADRs prove you think about trade-offs, not just solutions.'},
+    {t:'practical',c:'Write 6 ADRs in /docs/adr/: (1) ADR-001-clean-architecture (4 layers, consequences). (2) ADR-002-cqrs-mediatr. (3) ADR-003-rabbitmq-over-kafka (simpler ops, flexible routing vs Kafka high throughput — overkill for current scale). (4) ADR-004-postgresql-over-nosql. (5) ADR-005-ecs-fargate. (6) ADR-006-outbox-pattern. Each: 200–300 words max.'},
+    {t:'goal',c:'6 ADRs written. Each references your actual code. Push.'}
+  ]),
+  makeDay(100,'Swagger: Complete API Documentation',[
+    {t:'practical',c:'(1) Enable XML comments in all csproj. (2) Add [ProducesResponseType(typeof(ProductDto), 200)] and [ProducesResponseType(typeof(ProblemDetails), 404)] to EVERY action. (3) Add [SwaggerOperation(Summary, Description)] to each action. (4) Add JWT security definition to Swagger. (5) Configure Swagger accessible in staging/production behind API key check.'},
+    {t:'goal',c:'Every endpoint documented. JWT auth in Swagger. Accessible at https://yourdomain.com/swagger. Push.'}
+  ]),
+  makeDay(101,'Architecture Diagram + System Documentation',[
+    {t:'theory',c:'C4 Model: Context (system in world), Container (systems and relationships — use this level for interviews), Component, Code. Tools: draw.io (free), Mermaid (embeds in GitHub Markdown).'},
+    {t:'practical',c:'Create two diagrams: (1) System Context: ProductCatalog system + external actors. (2) Container diagram: ProductCatalog API, OrderManagement API, PostgreSQL×2, Redis, RabbitMQ, ECR, ECS, ALB, S3. Arrows with labels. Export PNG + create Mermaid version. Write 3-paragraph architecture narrative: what it does, how pieces fit, key decisions.'},
+    {t:'goal',c:'Two architecture diagrams. Narrative written. GitHub README renders Mermaid diagram. Push.'}
+  ]),
+  makeDay(102,'Loom Demo: Record the 5-Minute Walkthrough',[
+    {t:'practical',c:'Structure: (1) 30s — what the project is. (2) 60s — architecture walkthrough (show diagram). (3) 60s — ONE interesting code piece (Outbox processor or circuit breaker). (4) 60s — live demo (create product, place order, show RabbitMQ event). (5) 30s — what you would build next. Write script, practice 2–3 times, then record on Loom. Add link to README + LinkedIn + resume.'},
+    {t:'goal',c:'5-minute Loom video recorded. Link in README, LinkedIn, resume. Push.'}
+  ]),
+  makeDay(103,'Resume Overhaul: Impact-Driven Bullets',[
+    {t:'theory',c:'Bullet formula: Action verb + what + how + measurable result. WRONG: "Developed REST APIs using ASP.NET Core." RIGHT: "Built 12 REST APIs handling 80K daily requests; reduced P95 latency 60% by adding Redis cache layer and eliminating N+1 queries with Dapper."'},
+    {t:'practical',c:'Rewrite EVERY bullet with a metric. Skills section by category: Languages (C#, JavaScript, SQL), Frameworks (ASP.NET Core 8, Angular), Infrastructure (Docker, AWS ECS/EC2/RDS/S3/CloudWatch/IAM, GitHub Actions), Data (PostgreSQL, Redis, RabbitMQ), Patterns (Clean Architecture, CQRS, DDD). Project bullet: include live URL + key technical decisions.'},
+    {t:'goal',c:'Every bullet has a metric. Project bullet includes live URL. Skills section complete. Save as PDF. Push.'}
+  ]),
+  makeDay(104,'LinkedIn + Applications: Week 15 Sprint',[
+    {t:'practical',c:'(1) Update headline: "Backend Engineer | ASP.NET Core · Microservices · AWS · C# | 6 Years | Open to Product Companies." (2) Update About section (150 words). (3) Add Loom link to Featured section. (4) Set "Open to Work: recruiters only." (5) Send 10 personalized connection requests to eng managers at target companies. (6) Apply to 5 companies. Start tracking spreadsheet.'},
+    {t:'goal',c:'LinkedIn updated. 10 connection requests sent. 5 applications submitted. Spreadsheet started. Push.'}
+  ]),
+  makeDay(105,'Saturday: Pramp Mock Interview',[
+    {t:'practical',c:'3 hours: (1) Complete one Pramp.com mock interview. Write retro: problem, where stuck, optimal solution, improvements. (2) Apply to 5 more companies (10 total this week). (3) For top 3 targets: write personalized cover paragraph referencing their engineering blog or tech stack choice.'},
+    {t:'goal',c:'Pramp mock completed. Retro written. 10 applications this week. Push.'}
+  ]),
+  makeDay(106,'Sunday: Week 15 Review',[
+    {t:'theory',c:'Review: (1) Can you explain your 6 ADRs from memory? (2) Can you do the 5-min Loom demo live without Loom? (3) Can you say the project resume bullet from memory in one breath?'},
+    {t:'practical',c:'LeetCode #143 Reorder List (find middle + reverse + merge). 30 min. Rest.'}
+  ]),
+  weekHeader(16,'Applications + Interview Execution + Negotiation + Offer','Phase 4 · Days 107–112','#7C3AED'),
+  makeDay(107,'Application Strategy: 20 Companies in One Week',[
+    {t:'theory',c:'Job search funnel: Apply 20 → 10 respond → 6 screening → 4 technical → 2 final → 1 offer. Referrals: 8x higher response rate. Spend 50% effort on referrals.'},
+    {t:'practical',c:'Apply to 10 companies today. Sources: LinkedIn Jobs ("backend engineer .NET", Bangalore, 12–20 LPA, last 7 days), Naukri.com, Instahyre (product companies), direct career pages (Razorpay, Zepto, Meesho, BrowserStack, Chargebee, Postman), AngelList/Wellfound (Series B+ FinTech/SaaS). Track: Company, Role URL, Applied Date, JD keywords matched, Stage.'},
+    {t:'goal',c:'10 applications. Spreadsheet tracking all. Push tracking doc.'}
+  ]),
+  makeDay(108,'Interview Execution: Screening Rounds',[
+    {t:'theory',c:'HR screen: Do NOT disclose current CTC. Say "I am targeting 14–16 LPA based on market research for this role." Technical screen: treat seriously — many get eliminated here.'},
+    {t:'practical',c:'Apply to 10 more (total: 20). Prepare opening: "I have 6 years building backend systems in ASP.NET Core. Most recently I built a production microservices system deployed on AWS ECS, live at [URL]. I am looking for a product company to work at larger scale." Rehearse "current CTC" deflection: "I prefer to discuss what the role is worth. What is the budgeted range for this position?"'},
+    {t:'goal',c:'20 applications total. Screening answers rehearsed. Company research done for scheduled calls. Push.'}
+  ]),
+  makeDay(109,'Technical Interview Execution: Coding Round',[
+    {t:'theory',c:'Coding interview process: (1) Clarify (3–5 min). (2) Brute force first, describe before coding. (3) Optimise — identify pattern. (4) Code — clean, meaningful names. (5) Test — trace + edge cases. (6) Complexity — state time AND space.'},
+    {t:'practical',c:'Solve 5 critical problems (timed): #3 Longest Substring Without Repeating Characters (5 min), #76 Minimum Window Substring (15 min), #146 LRU Cache (15 min), #295 Find Median from Data Stream (20 min). Review pattern recognition: can you identify the pattern from a problem statement in < 30 seconds?'},
+    {t:'goal',c:'5 problems solved within time targets. Push solutions.'}
+  ]),
+  makeDay(110,'Salary Negotiation: Scripts + Strategy',[
+    {t:'theory',c:'BATNA: your other offer, or staying at current job. Anchoring: first number sets the reference — anchor high. Silence: after stating your number, stop talking. Range strategy: give a range with your target at the BOTTOM.'},
+    {t:'practical',c:'Memorise these scripts: (1) "Current CTC?" → "I prefer to focus on what this role is worth. What is the budgeted range?" (2) Offer received → "I was targeting 15–17 LPA for this level. Is there room to move there?" (3) No flexibility → "Would a joining bonus or 6-month review be possible?" (4) Competing offers → "I have another final round next week. Can you give me until [date]?" Practice until natural.'},
+    {t:'goal',c:'5 negotiation scripts written and rehearsed. Push to /interview-prep/negotiation.md.'}
+  ]),
+  makeDay(111,'Final Sprint: Top-Up Learning + Remaining Gaps',[
+    {t:'practical',c:'Write 3-sentence answers for 6 commonly forgotten topics: (1) CORS in ASP.NET Core + preflight request. (2) Authentication vs Authorization + how JWT implements both. (3) REST vs GraphQL — when each is appropriate. (4) API versioning strategies. (5) Idempotency — meaning + implementation (idempotency key in header). (6) Connection pooling — how EF Core + Npgsql handle it. Have CloudWatch metrics ready: requests/sec, DB query time, cache hit ratio, deployment duration.'},
+    {t:'goal',c:'6 topic answers written. Project metrics documented. Push.'}
+  ]),
+  makeDay(112,'Day 112: Final Day — Offers and Beyond',[
+    {t:'note',c:'What you have built over 112 days: Phase 1 — Clean Architecture .NET system, CQRS, domain events, design patterns, EF Core, tests. Phase 2 — Docker, Redis, RabbitMQ with DLQ and Outbox, 2 microservices, circuit breakers. Phase 3 — CI/CD pipeline, AWS ECS Fargate, RDS, S3, Parameter Store, CloudWatch, live HTTPS URL. Phase 4 — 3 HLD designs, 3 LLD designs, 6 ADRs, Swagger, architecture diagrams, Loom demo, 20 applications, negotiation scripted.'},
+    {t:'practical',c:'Do three things today: (1) Write a LinkedIn post about what you built and what you learned. (2) Verify the live URL is working (check CloudWatch — no errors in last 24h). (3) Solve LeetCode #146 LRU Cache completely from memory.'},
+    {t:'goal',c:'LinkedIn post published. Live URL verified. LRU Cache solved from memory. Job done.'}
+  ])
+];
+
+function renderPhase(days, containerId){
+  document.getElementById(containerId).innerHTML = days.join('');
+}
+
+renderPhase(P1, 'days-phase1');
+renderPhase(P2, 'days-phase2');
+renderPhase(P3, 'days-phase3');
+renderPhase(P4, 'days-phase4');
+
+const qnas=[
+  ['DI lifetime differences?','Transient=new per injection. Scoped=new per request. Singleton=one per app. Captive dependency bug: Singleton depending on Scoped — fix with IServiceScopeFactory.'],
+  ['ConfigureAwait(false)?','Tells awaiter not to capture SynchronisationContext. Use in library code. Prevents deadlocks where SyncCtx is single-threaded. Not needed in ASP.NET Core but good practice.'],
+  ['IEnumerable vs IQueryable?','IEnumerable: in-memory LINQ. IQueryable: expression tree → SQL. Using IEnumerable on DbSet fetches all rows first — catastrophic performance.'],
+  ['What is CQRS?','Separate read (Query) and write (Command) paths. Commands change state. Queries read state, never change it. Handlers are focused, testable, independently scalable.'],
+  ['What is Clean Architecture?','4 layers: Domain (no dependencies), Application (→Domain), Infrastructure (implements Application interfaces), API (→Application). Dependency rule: always points inward.'],
+  ['Cache-aside pattern?','Check cache → hit: return. Miss: query DB → write to cache with TTL → return. Invalidate cache on writes.'],
+  ['Outbox pattern?','Write event to outbox table in same DB transaction as business data. Background worker reads outbox and publishes to broker. Guarantees at-least-once delivery.'],
+  ['Circuit breaker states?','Closed: requests flow. Open: fail fast (no calls). Half-open: one test request. 5 failures → Open. Success in Half-open → Closed.'],
+  ['RabbitMQ over Kafka?','RabbitMQ: push-based, flexible routing, easier ops. Kafka: pull-based, log-based, replay events, millions/sec. Kafka for streaming at scale, RabbitMQ for task/command messaging.'],
+  ['Domain vs Integration Events?','Domain: within bounded context, synchronous (same transaction). Integration: cross-service, asynchronous (via message broker). Domain events can trigger integration events.'],
+  ['Optimistic vs Pessimistic concurrency?','Optimistic: fail if another writer changed data (rowversion). No lock held. Correct for web APIs. Pessimistic: lock row before reading. Only for very short operations.'],
+  ['IAM Instance Profile?','Role attached to EC2. EC2 calls AWS services using IMDS temporary credentials. No access keys stored. THE correct pattern for EC2→AWS auth.'],
+  ['ECS Fargate vs EC2?','Fargate: serverless — AWS manages host. No patching, no cluster management. Pay per task CPU/memory second. EC2: you manage EC2 instances — can use Reserved Instances for cost.'],
+  ['Why RDS in private subnet?','DB should not be reachable from internet. SG allows port 5432 only from application SG. If DB is in public subnet, it is directly attackable.'],
+  ['SOLID — one example each?','S: Controller handles HTTP only. O: Pipeline behaviour adds validation without modifying handler. L: Any IProductRepository impl is substitutable. I: IProductReadRepository vs IProductWriteRepository. D: Application depends on interface, not EfRepository.'],
+  ['Presigned URL — what and why?','Time-limited signed URL for one specific S3 operation. Client uploads/downloads directly to S3 — no API proxying. Secure (no public bucket), scalable (no server bandwidth).'],
+  ['N+1 problem + fix?','Load 100 products (1 query), then 100 queries for their categories = 101 total. Fix: .Include(p=>p.Category) generates single JOIN. For multiple collections: .AsSplitQuery().'],
+  ['Distributed lock — how?','Redis: SET key token NX PX ttl_ms (atomic). Set only if not exists (NX). Release only if your token (Lua script for atomicity). Prevents concurrent cache rebuild or job double-execution.'],
+  ['Rate limiter — sliding window counter?','count = current_window + (previous_window × (1 - elapsed/window_size)). O(1) space, more accurate than fixed window. Prevents boundary burst that fixed window allows.'],
+  ['Microservice boundaries?','Split by business capability, not technical layer. Each owns its data. Communicate via events or APIs (no shared DB). Start coarse-grained, split when teams diverge.'],
+  ['ALB vs NLB?','ALB (Layer 7): HTTP/HTTPS, route by URL/host, SSL termination, WAF. NLB (Layer 4): TCP/UDP, ultra-low latency, static IPs, millions req/sec. Use ALB for web APIs.'],
+  ['Saga pattern?','Manage distributed transactions without 2PC. Choreography: services react to events. Orchestration: central coordinator. Compensating transactions for rollback.'],
+  ['Strategy pattern usage?','PricingStrategy: Standard, BulkDiscount, Seasonal all implement IPricingStrategy. Factory selects at runtime. Adding new pricing rule does not modify existing strategies.'],
+  ['Decorator over inheritance for caching?','Decorator wraps same interface, composable at runtime. CachingRepository(EfRepository) OR CachingRepository(InMemoryRepository) — interchangeable. Inheritance is static, tightly coupled.'],
+  ['CI/CD pipeline — your setup?','Push to main → GitHub Actions CI (build+test+coverage) → docker build + push to ECR (:latest + :git-sha) → deploy to ECS Fargate (update task definition + rolling update) → CloudWatch health check. Total: < 8 minutes.'],
+  ['How do you handle secrets?','AWS Parameter Store SecureString (KMS-encrypted). ECS reads via IAM role (no access keys). No secrets in code, .env files, or baked into images.'],
+  ['URL Shortener — scale?','10:1 read:write. 11,600 reads/sec. Cache top 20% in Redis. Read replicas for DB. Counter-based short code generation (no collision). CDN for popular redirects.'],
+  ['What is Outbox Pattern vs direct publish?','Direct: save to DB, publish to broker — crash between = event lost. Outbox: save event to outbox table in same DB transaction. Worker publishes. Guaranteed delivery.'],
+  ['Good questions to ask interviewer?','(1) Biggest technical challenge the team is working on? (2) On-call rotation? (3) How are architectural decisions made? (4) Success at 6 months? (5) Biggest piece of tech debt?'],
+  ['Middleware pipeline order?','Russian doll model. Each middleware calls next(). Request flows forward in registration order. Response flows back in reverse. UseAuthentication before UseAuthorization always.']
+];
+
+document.getElementById('qna-grid').innerHTML = qnas.map(([q,a])=>`<div class="q-item"><div class="q">${q}</div><div class="a">${a}</div></div>`).join('');
+</script>
