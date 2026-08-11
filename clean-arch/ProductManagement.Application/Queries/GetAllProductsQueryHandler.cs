@@ -1,13 +1,14 @@
 using MediatR;
+using ProductManagement.Application.DTOs;
 using ProductManagement.Application.Interfaces;
 
-public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PagedResult<ProductDto>>
+public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, PagedResult<ProductListItemDto>>
 {
     private readonly IUnitOfWork _uow;
 
     public GetAllProductsQueryHandler(IUnitOfWork uow) => _uow = uow;
 
-    public async Task<PagedResult<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken ct)
+    public async Task<PagedResult<ProductListItemDto>> Handle(GetAllProductsQuery request, CancellationToken ct)
     {
         var allProducts = await _uow.Products.GetAllAsync(ct);
 
@@ -22,9 +23,9 @@ public class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, P
         var paged = filtered
             .Skip((request.Page - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(p => p.ToDto());
+            .Select(p => p.ToListItemDto());
 
-        return new PagedResult<ProductDto>
+        return new PagedResult<ProductListItemDto>
         {
             Items = paged,
             TotalCount = totalCount,

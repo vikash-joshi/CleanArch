@@ -13,7 +13,11 @@ public class Product : Entity
     public Guid? CategoryId { get; private set; }
     public string? CategoryName { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
     
+
+
 
 
     public Product(Guid id, string name, string description, Money price, int stockQuantity)

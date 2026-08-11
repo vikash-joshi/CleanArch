@@ -45,3 +45,16 @@ What is the responsibility of IUnitOfWork?
 i m not getting this 
 Why does the Application layer depend only on abstractions and not concrete implementations?
 just know that control is given by application and control will be implement by infra
+
+
+
+Why shouldn't the list endpoint return the complete ProductDetailDto?
+because the name says detail dto means entire infor about specific product.
+Does Simple CQRS require two databases?
+no it can read and write on same database 
+What is the difference between a Command and a Query?
+command use to change the strategyand query is use to read the current state
+Why can two Query handlers return two different DTOs from the same Product?
+to remove unnecessary overfetching data so repective query handle et what actually they need.
+What does "projection" mean in today's context?
+inetad of returing enitre object we return then specific properyt depend on query handler use case

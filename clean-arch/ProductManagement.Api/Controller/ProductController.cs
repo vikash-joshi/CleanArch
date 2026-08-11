@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using ProductManagement.Application.Commands;
+using ProductManagement.Application.DTOs;
 
 [ApiController]
 [Route("api/v1/products")]
@@ -47,7 +48,7 @@ public class ProductsController : ControllerBase
     [HttpGet("GetAll")]
     public async Task<IActionResult> GetAllProducts(int page = 1, int pageSize = 2, string? search = null, CancellationToken ct = default)
     {
-        var result = await _mediator.Send(new GetAllProductsQuery(page, pageSize, search, null), ct);
+        PagedResult<ProductListItemDto>? result = await _mediator.Send(new GetAllProductsQuery(page, pageSize, search, null), ct);
         return Ok(result);
     }
 
