@@ -1,6 +1,6 @@
 
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ProductManagement.Application.Interfaces;
@@ -20,11 +20,11 @@ public class JwtTokenGenerator : IJwtTokenGenerator
 
         var clains = new[]
         {
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, userId.ToString()),
-            new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Email, email)
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Email, email)
         };
 
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));
 
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -39,6 +39,6 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         // Implement JWT token generation logic here
         // For example, using System.IdentityModel.Tokens.Jwt and Microsoft.IdentityModel.Tokens
         // This is a placeholder implementation
-        return $"Token for user {userId} with email {email} {new JwtSecurityTokenHandler().WriteToken(token)}";
+        return $"Token for user {token} with email {email} {new JwtSecurityTokenHandler().WriteToken(token)}";
     }
 }

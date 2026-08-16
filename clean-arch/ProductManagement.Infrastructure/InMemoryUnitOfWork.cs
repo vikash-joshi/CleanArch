@@ -12,43 +12,47 @@ namespace ProductManagement.Infrastructure
     {
         public List<Product> Products { get; } = new();
         public List<Category> Categories { get; } = new();
-
         public List<Order> Orders { get; } = new();
+        public List<User> Users { get; } = new();
     }
 
-public sealed class InMemoryUnitOfWork : IUnitOfWork
-{
-    private readonly List<Product> _products;
-    private readonly List<Category> _categories;
-
-    private readonly List<Order> _orders = new();
-    private readonly IDomainEventDispatcher _dispatcher;
-
-    public InMemoryUnitOfWork(InMemoryDatabase database, IDomainEventDispatcher dispatcher)
+    public sealed class InMemoryUnitOfWork : IUnitOfWork
     {
-        _dispatcher = dispatcher;
-        _products = database.Products;
-        _categories = database.Categories;
-        _orders = database.Orders;
-        Products = new InMemoryProductRepository(_products, _categories);
-        Categories = new InMemoryCategoryRepository(_categories, _products);
-        Orders = new InMemoryOrderRepository(_orders);
+        private readonly List<Product> _products;
+        private readonly List<Category> _categories;
+
+        private readonly List<Order> _orders = new();
+        private readonly List<User> _users = new();
+        private readonly IDomainEventDispatcher _dispatcher;
+
+        public InMemoryUnitOfWork(InMemoryDatabase database, IDomainEventDispatcher dispatcher)
+        {
+            _dispatcher = dispatcher;
+            _products = database.Products;
+            _categories = database.Categories;
+            _orders = database.Orders;
+            _users = database.Users;
+            Products = new InMemoryProductRepository(_products, _categories);
+            Categories = new InMemoryCategoryRepository(_categories, _products);
+            Orders = new InMemoryOrderRepository(_orders);
+            Users = new InMemoryUserRepository(_users);
+        }
+
+        public IProductRepository Products { get; set; }
+        public ICategoryRepository Categories { get; set; }
+        public IOrderRepository Orders { get; set; }
+        public IUserRepository Users { get; set; }
+
+        public async Task<int> SaveChangesAsync(CancellationToken ct)
+        {
+            // dispatch events from BOTH Products and Orders now — Order raises OrderConfirmedEvent too
+            var entitiesWithEvents = _products.OfType<Entity>()
+                .Concat(_orders.OfType<Entity>());
+
+            await _dispatcher.DispatchAndClearEvents(entitiesWithEvents, ct);
+            return 1;
+        }
     }
-
-    public IProductRepository Products { get; set; }
-    public ICategoryRepository Categories { get; set; }
-    public IOrderRepository Orders { get; set; }
-
-    public async Task<int> SaveChangesAsync(CancellationToken ct)
-    {
-        // dispatch events from BOTH Products and Orders now — Order raises OrderConfirmedEvent too
-        var entitiesWithEvents = _products.OfType<Entity>()
-            .Concat(_orders.OfType<Entity>());
-
-        await _dispatcher.DispatchAndClearEvents(entitiesWithEvents, ct);
-        return 1;
-    }
-}
 
     public sealed class InMemoryProductRepository : IProductRepository
     {
@@ -61,11 +65,11 @@ public sealed class InMemoryUnitOfWork : IUnitOfWork
             _categories = categories;
         }
 
-    public Task<Product?> GetByIdAsync(Guid id, CancellationToken ct) =>
-        Task.FromResult(_products.FirstOrDefault(p => p.Id == id));
+        public Task<Product?> GetByIdAsync(Guid id, CancellationToken ct) =>
+            Task.FromResult(_products.FirstOrDefault(p => p.Id == id));
 
-    public Task<IEnumerable<Product>> GetByNameAsync(string name, CancellationToken ct) =>
-        Task.FromResult(_products.Where(p => p.Name.Contains(name, StringComparison.OrdinalIgnoreCase)));
+        public Task<IEnumerable<Product>> GetByNameAsync(string name, CancellationToken ct) =>
+            Task.FromResult(_products.Where(p => p.Name.Contains(name, StringComparison.OrdinalIgnoreCase)));
 
         public Task<IEnumerable<Product>> GetAllAsync(CancellationToken ct)
         {
@@ -162,38 +166,59 @@ public sealed class InMemoryUnitOfWork : IUnitOfWork
         public Task<bool> ExistsCategoryByNameAsync(string name, CancellationToken ct) =>
             Task.FromResult(_categories.Any(c => c.Name == name));
 
-    public Task<IEnumerable<Product>> GetProductsByCategoryQuery(Guid categoryId, CancellationToken ct)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public sealed class InMemoryOrderRepository : IOrderRepository
-{
-    private readonly List<Order> _orders;
-
-    public InMemoryOrderRepository(List<Order> orders)
-    {
-        _orders = orders;
+        public Task<IEnumerable<Product>> GetProductsByCategoryQuery(Guid categoryId, CancellationToken ct)
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    public Task<Order?> GetByIdAsync(Guid id, CancellationToken ct) =>
-        Task.FromResult(_orders.FirstOrDefault(o => o.Id == id));
-
-    public Task<IEnumerable<Order>> GetAllAsync(CancellationToken ct) =>
-        Task.FromResult(_orders.AsEnumerable());
-
-    public Task AddAsync(Order order, CancellationToken ct)
+    public sealed class InMemoryOrderRepository : IOrderRepository
     {
-        _orders.Add(order);
-        return Task.CompletedTask;
+        private readonly List<Order> _orders;
+
+        public InMemoryOrderRepository(List<Order> orders)
+        {
+            _orders = orders;
+        }
+
+        public Task<Order?> GetByIdAsync(Guid id, CancellationToken ct) =>
+            Task.FromResult(_orders.FirstOrDefault(o => o.Id == id));
+
+        public Task<IEnumerable<Order>> GetAllAsync(CancellationToken ct) =>
+            Task.FromResult(_orders.AsEnumerable());
+
+        public Task AddAsync(Order order, CancellationToken ct)
+        {
+            _orders.Add(order);
+            return Task.CompletedTask;
+        }
+
+        public Task UpdateAsync(Order order, CancellationToken ct)
+        {
+            var index = _orders.FindIndex(o => o.Id == order.Id);
+            if (index >= 0) _orders[index] = order;
+            return Task.CompletedTask;
+        }
     }
 
-    public Task UpdateAsync(Order order, CancellationToken ct)
+    public sealed class InMemoryUserRepository : IUserRepository
     {
-        var index = _orders.FindIndex(o => o.Id == order.Id);
-        if (index >= 0) _orders[index] = order;
-        return Task.CompletedTask;
+        private readonly List<User> _users;
+
+        public InMemoryUserRepository(List<User> _users)
+        {
+            this._users = _users;
+        }
+
+        public Task<User?> ExistByEmail(string Email, CancellationToken ct) =>
+            Task.FromResult(_users.FirstOrDefault(o => o.Email == Email));
+
+
+        public Task AddAsync(User user, CancellationToken ct)
+        {
+            _users.Add(user);
+            return Task.CompletedTask;
+        }
+
     }
-}
 }

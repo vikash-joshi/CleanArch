@@ -1,6 +1,9 @@
+using System.Text;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 using ProductManagement.Application.Behaviours;
 using ProductManagement.Application.BusinessLogics;
 using ProductManagement.Application.Commands;
@@ -11,6 +14,7 @@ using ProductManagement.Application.Validators;
 using ProductManagement.Domain.Common;
 using ProductManagement.Domain.Factories;
 using ProductManagement.Infrastructure;
+using ProductManagement.Infrastructure.Auth;
 using ProductManagement.Infrastructure.Decorators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +55,25 @@ builder.Services.AddScoped<PricingStrategyFactory>();
 builder.Services.AddScoped<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
 builder.Services.AddScoped<IDomainEventHandler<ProductCreatedEvent>, ProductCreatedEventHandler>();
 builder.Services.AddScoped<ProductFactory>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
+        };
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
 
 var app = builder.Build();
 
@@ -81,5 +104,7 @@ app.UseHttpsRedirection();
     });
 });
 */
+app.UseAuthentication();   // must come BEFORE UseAuthorization
+app.UseAuthorization();
 app.MapControllers();
 app.Run();

@@ -1,8 +1,10 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductManagement.Application.Commands;
 using ProductManagement.Application.DTOs;
 
+[Authorize]
 [ApiController]
 [Route("api/v1/products")]
 public class ProductsController : ControllerBase
