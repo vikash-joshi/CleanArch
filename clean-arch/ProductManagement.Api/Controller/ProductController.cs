@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProductManagement.Application.Commands;
 using ProductManagement.Application.DTOs;
 
-[Authorize]
+[Authorize(Roles ="Admin")]
 [ApiController]
 [Route("api/v1/products")]
 public class ProductsController : ControllerBase
@@ -35,6 +35,7 @@ public class ProductsController : ControllerBase
             : BadRequest(result.Error);
     }
 
+    
    [HttpDelete("Delete")]
     public async Task<IActionResult> Delete(DeleteProductRequest req, CancellationToken ct)
     {

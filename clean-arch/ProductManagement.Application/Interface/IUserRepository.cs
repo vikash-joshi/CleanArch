@@ -5,5 +5,10 @@ namespace ProductManagement.Application.Interfaces;
 public interface IUserRepository
 {
     Task<User?> ExistByEmail(string Email, CancellationToken ct);
+
+     Task<User?> GetUserById(Guid UserId, CancellationToken ct);
     Task AddAsync(User user, CancellationToken ct);
+    Task<IEnumerable<User>> GetUsersAsync(string Role, CancellationToken ct);
+
+    
 }

@@ -1,0 +1,6 @@
+docker run --name pm-postgres \
+  -e POSTGRES_USER=pmuser \
+  -e POSTGRES_PASSWORD=devpassword \
+  -e POSTGRES_DB=productmanagement \
+  -p 5432:5432 \
+  -d postgres:16

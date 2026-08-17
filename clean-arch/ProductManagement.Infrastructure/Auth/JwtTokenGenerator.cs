@@ -15,13 +15,14 @@ public class JwtTokenGenerator : IJwtTokenGenerator
     {
         _configuration = configuration;
     }
-    public string GenerateToken(Guid userId, string email)
+    public string GenerateToken(Guid userId, string email,string Role)
     {
 
         var clains = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-            new Claim(ClaimTypes.Email, email)
+            new Claim(ClaimTypes.Email, email),
+            new Claim(ClaimTypes.Role , Role)
         };
 
         var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"]));

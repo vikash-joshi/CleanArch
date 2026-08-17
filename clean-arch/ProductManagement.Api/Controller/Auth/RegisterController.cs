@@ -27,5 +27,19 @@ public class RegisterController : ControllerBase
         return result.IsSuccess ? Ok(new { token = result.Value }) : Unauthorized(result.Error);
     }
 
+    [HttpGet("Users")]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var result = await mediator.Send(new GetAllUsersQuery(""),cancellationToken);
+
+        return Ok(result);
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshTokenCommand command, CancellationToken ct)
+    {
+        var result = await mediator.Send(command, ct);
+        return result.IsSuccess ? Ok(new { accessToken = result.Value }) : Unauthorized(result.Error);
+    }
 
 }

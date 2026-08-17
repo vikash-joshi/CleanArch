@@ -14,6 +14,9 @@ namespace ProductManagement.Infrastructure
         public List<Category> Categories { get; } = new();
         public List<Order> Orders { get; } = new();
         public List<User> Users { get; } = new();
+
+                public List<RefreshToken> RefreshTokens {get;} = new();
+
     }
 
     public sealed class InMemoryUnitOfWork : IUnitOfWork
@@ -23,6 +26,8 @@ namespace ProductManagement.Infrastructure
 
         private readonly List<Order> _orders = new();
         private readonly List<User> _users = new();
+
+        private readonly List<RefreshToken> _refreshTokens = new();
         private readonly IDomainEventDispatcher _dispatcher;
 
         public InMemoryUnitOfWork(InMemoryDatabase database, IDomainEventDispatcher dispatcher)
@@ -32,16 +37,19 @@ namespace ProductManagement.Infrastructure
             _categories = database.Categories;
             _orders = database.Orders;
             _users = database.Users;
+            _refreshTokens = database.RefreshTokens;
             Products = new InMemoryProductRepository(_products, _categories);
             Categories = new InMemoryCategoryRepository(_categories, _products);
             Orders = new InMemoryOrderRepository(_orders);
             Users = new InMemoryUserRepository(_users);
+            RefreshTokens = new InMemoryRefereshTokenRepository(_refreshTokens);
         }
 
         public IProductRepository Products { get; set; }
         public ICategoryRepository Categories { get; set; }
         public IOrderRepository Orders { get; set; }
         public IUserRepository Users { get; set; }
+        public IRefreshTokenRepository RefreshTokens {get;set;}
 
         public async Task<int> SaveChangesAsync(CancellationToken ct)
         {
@@ -212,6 +220,9 @@ namespace ProductManagement.Infrastructure
 
         public Task<User?> ExistByEmail(string Email, CancellationToken ct) =>
             Task.FromResult(_users.FirstOrDefault(o => o.Email == Email));
+        
+        public Task<User?> GetUserById(Guid UserID, CancellationToken ct) =>
+            Task.FromResult(_users.FirstOrDefault(o => o.Id == UserID));
 
 
         public Task AddAsync(User user, CancellationToken ct)
@@ -220,5 +231,29 @@ namespace ProductManagement.Infrastructure
             return Task.CompletedTask;
         }
 
+        public Task<IEnumerable<User>> GetUsersAsync(string Role, CancellationToken token)
+        {
+            
+            return Task.FromResult(_users.AsEnumerable());
+        }
+
     }
+
+    public sealed class InMemoryRefereshTokenRepository:IRefreshTokenRepository
+    {
+         private readonly List<RefreshToken> _tokens;
+
+    public InMemoryRefereshTokenRepository(List<RefreshToken> tokens) => _tokens = tokens;
+
+    public Task<RefreshToken?> GetByTokenAsync(string token, CancellationToken ct) =>
+        Task.FromResult(_tokens.FirstOrDefault(t => t.Token == token));
+
+    public Task AddAsync(RefreshToken refreshToken, CancellationToken ct)
+    {
+        _tokens.Add(refreshToken);
+        return Task.CompletedTask;
+    }
+
+    }
+
 }

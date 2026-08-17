@@ -8,5 +8,8 @@ public interface IUnitOfWork
     ICategoryRepository Categories { get; set; }
 
     IUserRepository Users {get;set;}
+
+    IRefreshTokenRepository RefreshTokens { get;set; }   // 🆕
+
     Task<int> SaveChangesAsync(CancellationToken ct);
 }
