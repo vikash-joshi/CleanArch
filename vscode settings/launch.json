@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug ProductManagement API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/clean-arch/ProductManagement.Api/bin/Debug/net10.0/ProductManagement.Api.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/clean-arch/ProductManagement.Api",
+      "stopAtEntry": false,
+      "console": "internalConsole"
+    }
+  ]
+}
