@@ -1,9 +1,17 @@
 using System.Text;
+
 using FluentValidation;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
+
+using ProductManagement.Domain.Common;
+using ProductManagement.Domain.Factories;
+
 using ProductManagement.Application.Behaviours;
 using ProductManagement.Application.BusinessLogics;
 using ProductManagement.Application.Commands;
@@ -11,11 +19,11 @@ using ProductManagement.Application.EventHanlders;
 using ProductManagement.Application.Interfaces;
 using ProductManagement.Application.Strategies;
 using ProductManagement.Application.Validators;
-using ProductManagement.Domain.Common;
-using ProductManagement.Domain.Factories;
+
 using ProductManagement.Infrastructure;
 using ProductManagement.Infrastructure.Auth;
 using ProductManagement.Infrastructure.Decorators;
+using ProductManagement.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +33,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
 builder.Services.AddControllers();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddMemoryCache();
+
 builder.Services.AddSingleton<InMemoryDatabase>();
 builder.Services.AddScoped<IUnitOfWork>(sp => new InMemoryUnitOfWork(
     sp.GetRequiredService<InMemoryDatabase>(),

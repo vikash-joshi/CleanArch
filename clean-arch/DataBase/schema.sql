@@ -1,71 +1,46 @@
-CREATE EXTENSION IF NOT EXISTS "pgcrypto";
-
--- ============================================================
--- Users Table
--- ============================================================
-
+CREATE TABLE categories (
+    id UUID PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    parent_id UUID REFERENCES categories(id)
+);
+CREATE TABLE products (
+    id UUID PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL CHECK (price > 0),
+    stock_quantity INT NOT NULL CHECK (stock_quantity >= 0),
+    category_id UUID REFERENCES categories(id),
+    is_deleted BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP
+);
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'Customer'
 );
--- ============================================================
--- Categories Table
--- ============================================================
-create table catgeories(
-id UUID primary key default gen_random_uuid(),
-name varchar(255) not null,
-description VARCHAR(500),
-parent_id UUID NULL,
-is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-created_at timestamp default now(),
-updated_at timestamp default now(),
-constraint FK_Parent_Id foreign key (parent_id) references catgeories(id) ON DELETE SET NULL
-)
-
--- ============================================================
--- PRODUCTS
--- ============================================================
-
-Create Table products(
-id UUID primary key default gen_random_uuid(),
-name varchar(255) not null,
-description VARCHAR(500),
-price decimal(10,2) not null,
-stock_quantity INTEGER NOT NULL DEFAULT 0,
-category_id UUID not null,
-is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
-created_at timestamp default now(),
-updated_at timestamp default now(),
---constraint check Check_Price(price >= 0)
---constraint check Check_Stock_Quantity(stock_quantity >= 0)
-constraint FK_Category_Id foreign key (category_id) references catgeories(id) ON DELETE RESTRICT
+CREATE TABLE orders (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id),
+    shipping_address VARCHAR(500) NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'Pending',
+    created_at TIMESTAMP NOT NULL DEFAULT now()
 );
-
--- ============================================================
--- ORDERS
--- ============================================================
-
-CREATE TABLE orders(
-id UUID primary key default gen_random_uuid(),
-user_id UUID not null,
-shipping_address VARCHAR(500) NOT NULL,
-status varchar(50) not null default 'pending',
-created_at timestamp default now()
-)
-
--- ============================================================
--- orderitems
--- ============================================================
-create table orderitems(
-id UUID primary key default gen_random_uuid(),
-order_id UUID not null,
-product_id UUID not null,
-quantity INTEGER not null default 1,
---check constraint Check_Quantity(quantity >= 1),
-unit_price DECIMAL(10, 2) NOT NULL CHECK (unit_price >= 0)
-)
-
-
-select * from information_schema.tables 
+CREATE TABLE order_items (
+    id UUID PRIMARY KEY,
+    order_id UUID NOT NULL REFERENCES orders(id),
+    product_id UUID NOT NULL REFERENCES products(id),
+    quantity INT NOT NULL CHECK (quantity > 0),
+    unit_price DECIMAL(10, 2) NOT NULL CHECK (unit_price >= 0)
+);
+-- Indexes on every FK column, per today's theory
+CREATE INDEX idx_products_category_id ON products(category_id);
+CREATE INDEX idx_orders_user_id ON orders(user_id);
+CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX idx_order_items_product_id ON order_items(product_id);
+CREATE INDEX idx_categories_parent_id ON categories(parent_id);
+-- Indexes for frequent search/sort columns
+CREATE INDEX idx_products_name ON products(name);
+CREATE INDEX idx_products_created_at ON products(created_at);

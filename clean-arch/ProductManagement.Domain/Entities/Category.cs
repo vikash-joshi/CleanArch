@@ -5,6 +5,8 @@ public class Category
     public string? Description { get; private set; }
     public bool IsDeleted { get; private set; }
 
+    public Guid? ParentCategoryId { get; private set; }
+
     public Category(Guid id, string name, string? description)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name is required");

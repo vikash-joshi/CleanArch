@@ -18,7 +18,7 @@ public class Product : Entity
     
 
 
-
+    private Product() { } 
 
     public Product(Guid id, string name, string description, Money price, int stockQuantity)
     {
